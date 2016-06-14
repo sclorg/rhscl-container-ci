@@ -1,0 +1,9 @@
+- project:
+    name: ror
+    namespace: rh
+    gitproject: ror-container
+    gituser: sclorg
+    release: 7
+    arch: x86_64
+    jobs:
+        - 'SCLo-container-{name}-{namespace}'

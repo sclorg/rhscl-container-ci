@@ -1,0 +1,11 @@
+- trigger:
+    name: github-pr
+    triggers:
+      - github-pull-request:
+          admin-list:
+            - hhorak
+          white-list:
+            - hhorak
+          cron: 'H/10 * * * *'
+          build-desc-template: "Checks whether PR does not break anything"
+          trigger-phrase: '[test]'

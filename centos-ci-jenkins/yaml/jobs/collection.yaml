@@ -1,0 +1,30 @@
+# parameters:
+#   name: software collection name, e.g. httpd24
+#   namespace: SCL namespace/prefix, e.g. rh
+#   release: version of CentOS to test, e.g. 6
+#   arch: architecture of CentOS to test, e.g. x86_64
+- job-template:
+    name: 'SCLo-container-{name}-{namespace}'
+    scm:
+        - sclo-docker-tests-collection:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - weekly
+        - scm_fifteen_minutes
+        - github-pr
+    builders:
+        - cico_install
+        - shell: |
+            . cicoclient/bin/activate
+            cico node get -f value --arch {arch} --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
+            tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
+            tail -n 1 cico.out | cut -d ' ' -f 2 > host
+        - generate_ssh_config
+        - shell: |
+            scp -F ssh_config -rp $(pwd) host:sources
+            ssh -F ssh_config host yum -y install docker perl git python-setuptools
+            ssh -F ssh_config host service docker start
+            ssh -F ssh_config host make test -C sources
+    publishers:
+        - cico_done
