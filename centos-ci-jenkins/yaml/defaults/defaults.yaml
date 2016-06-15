@@ -1,11 +1,14 @@
 ##############################################################################
 ####   Defaults
 ###############################################################################
+# parameters:
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
 - defaults:
     description: |
       This job is automatically updated by Jenkins Job Builder, any manual
       change will be lost in the next update. If you want to make permanent
-      changes, check out the <a href="https://github.com/sclorg/sclo-ci-tests/">sclo-ci-tests</a> repo.
+      changes, check out the <a href="https://github.com/sclorg/rhscl-container-ci/">rhscl-container-ci</a> repo.
     name: global
     project-type: freestyle
     concurrent: false
@@ -16,4 +19,4 @@
     node: sclo-sig
     properties:
       - github:
-          url: https://github.com/sclorg/mariadb-container/
+          url: https://github.com/{gituser}/{gitproject}

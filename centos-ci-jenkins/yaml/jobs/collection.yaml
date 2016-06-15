@@ -3,10 +3,12 @@
 #   namespace: SCL namespace/prefix, e.g. rh
 #   release: version of CentOS to test, e.g. 6
 #   arch: architecture of CentOS to test, e.g. x86_64
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
 - job-template:
     name: 'SCLo-container-{name}-{namespace}'
     scm:
-        - sclo-docker-tests-collection:
+        - sclo-container-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:

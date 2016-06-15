@@ -1,0 +1,13 @@
+# parameters:
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
+- scm:
+    name: sclo-container-pull-test
+    scm:
+      - git:
+          url: git://github.com/{gituser}/{gitproject}.git
+          credentials-id: 1d7dba44-5b34-42b3-886c-4d659ffb2aae
+          refspec: '+refs/pull/*:refs/remotes/origin/pr/*'
+          branches:
+             - '${{ghprbActualCommit}}'
+          skip-tag: True

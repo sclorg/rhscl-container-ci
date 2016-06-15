@@ -1,4 +1,4 @@
-CI Tests for Contaienr Images Based on Red Hat Software Collections
+CI Tests for Container Images Based on Red Hat Software Collections
 ===================================================================
 
 This repository includes necessary metadata to test Contaienr Images
