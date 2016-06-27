@@ -1,0 +1,55 @@
+- project:
+    name: github-repo-permissions
+    jobs:
+        - 'SCLo-test-github-permissions'
+
+- job-template:
+    name: 'SCLo-test-github-permissions'
+    project-type: freestyle
+    concurrent: false
+    logrotate:
+        numToKeep: 5
+    properties:
+      - github:
+           url: https://github.com/sclorg/rhscl-container-ci/tree/master/sclorg-permissions-test
+    scm:
+      - git:
+            url: https://github.com/sclorg/rhscl-container-ci.git
+            branches:
+              - 'refs/heads/master'
+            wipe-workspace: false
+            skip-tag: true
+    triggers:
+      - timed: 'H 12 * * *'
+    parameters:
+      - string:
+            name: GH_TEAM_TO_CHECK
+            default: Container images
+            description: "String to search to match team with container images, defaults to 'Container images'."
+      - string:
+            name: GH_USER_WHITELIST
+            default: openshift-bot centos-ci
+            description: "Whitespace separated list of github users to whitelist in testing, defaults to 'openshift-bot centos-ci'."
+    builders:
+      - shell: |
+            test_output=$(./sclorg-permissions-test/report_invalid_users)
+            if echo "${test_output}" | grep -q "#invalid members: [1-9]"; then
+              #echo "${test_output}"
+              exit 1
+            fi
+    publishers:
+      - email:
+            recipients: 'hhorak@redhat.com mskalick@redhat.com'
+
+    description: 'This test check repositories for container images in sclorg github organization. Only employees of Red Hat can have push or admin permissions.
+
+
+This job requires:
+
+- environmental variable GH_ACCESS_TOKEN which contains token for github user who has access to checked repositories
+
+- "json", "rest_client", "i18n" and "ldap" gems
+
+- connection to RH VPN (to access ldap.rdu.redhat.com)
+
+'

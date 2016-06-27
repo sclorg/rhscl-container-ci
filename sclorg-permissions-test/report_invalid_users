@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+$: << File.expand_path(File.dirname(__FILE__))
+
+require 'i18n'
+require 'lib/ldap'
+require 'lib/github'
+
+I18n.config.enforce_available_locales = false
+
+IMPERFECT_MATCH = '(imperfect match)'
+
+# List invalid collaborators of repositories from sclorg github organitation
+def list_invalid_users
+  puts "Potential Invalid GitHub Users:"
+  valid_user_names = {}
+  if !ENV.key?("GH_TEAM_TO_CHECK")
+    puts "ERROR: Missing GH_TEAM_TO_CHECK variable."
+    abort
+  end
+  user_whitelist=[]
+  if ENV.key?("GH_USER_WHITELIST")
+    user_whitelist=ENV["GH_USER_WHITELIST"].split(" ")
+    puts "Whitelisted users: #{user_whitelist}\n"
+  end
+  github_org_to_teams.each do |org_name, github_teams|
+    puts "Org: #{org_name}"
+    github_teams.each do |team|
+      if team['name'].include? ENV["GH_TEAM_TO_CHECK"]
+        puts "Team: #{team['name']}(#{team['id']})"
+        github_team_repos(team).each do |repo|
+          puts " Repository: #{repo['name']}"
+          users = github_repo_collaborators(repo)
+          valid_count = 0
+          invalid_count = 0
+          users.each do |user|
+            if user['permissions']['admin'] != true && user['permissions']['push'] != true
+              next
+            end
+            user = github_user(user)
+            login = user['login']
+            if valid_user_names.has_key?(login) || valid_user_names.has_key?(login + IMPERFECT_MATCH)
+              valid_count += 1
+              next
+            end
+            # User is whitelisted
+            if user_whitelist.include? login
+              valid_user_names[login] = true
+              valid_count += 1
+              next
+            end
+            name = user['name']
+            email = user['email']
+            begin
+              if email && email.end_with?('@redhat.com') && ldap_user_by_email(email)
+                # Found email in ldap
+                valid_user_names[login] = true
+                valid_count += 1
+              else
+                email = ldap_email(name, login, false)
+                if email
+                  valid_user_names[login] = true
+                  valid_count += 1
+                else
+                  email = ldap_email(name, login, false, true)
+                  if email
+                    valid_user_names[login + IMPERFECT_MATCH] = true
+                    valid_count += 1
+                  else
+                    puts "  #{login}: #{name}"
+                    invalid_count += 1
+                  end
+                end
+              end
+            rescue Exception => e
+              puts "    #{login}: #{name} (Exception: #{e.message})"
+            end
+          end
+          puts "  #invalid members: #{invalid_count}"
+        end
+      end
+    end
+    puts "\n\nValid GitHub Logins:"
+    puts valid_user_names.keys
+  end
+end
+
+list_invalid_users
