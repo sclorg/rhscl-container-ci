@@ -20,3 +20,8 @@
     properties:
       - github:
           url: https://github.com/{gituser}/{gitproject}
+      - raw:
+          xml: |
+            <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.17.1">
+              <optOut>true</optOut>
+            </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
