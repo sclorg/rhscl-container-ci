@@ -11,5 +11,6 @@ fi
 source cicoclient/bin/activate
 
 if ! type cico >/dev/null 2>&1; then
+    pip install -U pip
     pip install python-cicoclient
 fi
