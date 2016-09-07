@@ -26,6 +26,7 @@
             ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh
             ssh -F ssh_config host yum -y install source-to-image
             ssh -F ssh_config host service docker start
+            ssh -F ssh_config host 'cd sources && git submodule update --init'
             ssh -F ssh_config host make test SKIP_SQUASH=1 -C sources
     publishers:
         - cico_done
