@@ -12,3 +12,4 @@
           cron: 'H/5 * * * *'
           build-desc-template: "Checks whether PR does not break anything"
           trigger-phrase: '.*\[test\].*'
+          status-context: '{context}'

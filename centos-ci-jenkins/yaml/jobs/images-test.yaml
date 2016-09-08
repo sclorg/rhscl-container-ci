@@ -5,14 +5,26 @@
 #   arch: architecture of CentOS to test, e.g. x86_64
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
+#   project_trigger: projects which can trigger this job
+#   context: context name for github statuses
 - job-template:
     name: 'SCLo-container-{name}-{namespace}'
+    properties:
+      - github:
+          url: https://github.com/{gituser}/{gitproject}
+      - raw:
+          xml: |
+            <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.17.1">
+              <optOut>true</optOut>
+            </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
+    node: sclo-sig
     scm:
-        - sclo-container-pull-test:
+        - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr
+        - github-pr:
+            context: '{context}'
     builders:
         - cico_install
         - shell: |
@@ -26,7 +38,8 @@
             ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh
             ssh -F ssh_config host yum -y install source-to-image
             ssh -F ssh_config host service docker start
+            ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             ssh -F ssh_config host 'cd sources && git submodule update --init'
-            ssh -F ssh_config host make test SKIP_SQUASH=1 -C sources
+            ssh -F ssh_config host make test SKIP_SQUASH=1 UPDATE_BASE=1 -C sources
     publishers:
         - cico_done
