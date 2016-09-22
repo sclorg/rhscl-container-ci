@@ -1,0 +1,32 @@
+# parameters:
+#   name: software collection name, e.g. httpd24
+#   namespace: SCL namespace/prefix, e.g. rh
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
+#   project_trigger: projects which can trigger this job
+#   context: context name for github statuses
+- job-template:
+    name: 'rhscl-images-{name}-{namespace}'
+    properties:
+      - github:
+          url: https://github.com/{gituser}/{gitproject}
+      - raw:
+          xml: |
+            <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.17.1">
+              <optOut>true</optOut>
+            </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
+    node: rhscl_slave_1_root
+    scm:
+        - images-pull-test:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - github-pr:
+            context: '{context}'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            git submodule update --init
+            make test SKIP_SQUASH=1 UPDATE_BASE=1 TARGER=rhel7

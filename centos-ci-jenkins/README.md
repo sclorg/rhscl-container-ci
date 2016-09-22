@@ -2,10 +2,9 @@
 
 This directory contains job configuration files, managed through [Jenkins Job
 Builder](http://ci.openstack.org/jenkins-job-builder/) to run tests for each
-software collection Docker image on the
-[CentOS CI infrastructure](https://ci.centos.org).
+software collection Docker image.
 
-*View all tests at [SCLo on ci.centos.org](https://ci.centos.org/view/SCLo/).*
+*View all CentOS7 tests at [SCLo on ci.centos.org](https://ci.centos.org/view/SCLo/).*
 
 ## Pre-requisites
 
@@ -37,5 +36,21 @@ the home directory on slave01.ci.centos.org.
 
 ## Generated jobs
 
-* *Per-collection tests*: for every SCL, a job will be generated to run
-  the test suite, e.g. `SCLo-git-rh-docker`.
+Content of folder `./yaml/jobs/collections/` can be generated running `./run.sh`. It is generated from [configuration file](https://github.com/sclorg/rhscl-container-ci/blob/master/centos-ci-jenkins/configuration) - each line of this file has format: "name namespace github_org github_project triggering project".
+
+For each project three jenkins jobs are generated:
+
+* *SCLo-container-{name}-{namespace}*: job which tests content of pull requests in CentOS7. It requires to run on [CentOS CI infrastructure](https://ci.centos.org)).
+
+* *rhscl-images-{name}-{namespace}*: job which tests content of pull requests in RHEL7. It requires to run on machine with access to RHEL7 Docker image.
+
+* *rhscl-images-{name}-{namespace}-build*: job which after new commit to repository builds CentoOS7 based image and pushes it to Docker Hub. This job is *not* configured to use CentOS CI infrastructure.
+
+
+During updating jobs you can select jobs by globbing. For example to update jobs configured for CentOS CI run
+
+    ./run.sh update SCLo-*
+
+or to update the rest of jobs in different jenkins instance, update your `jenkins_jobs.ini` file and run
+
+    ./run.sh update rhscl-images-*

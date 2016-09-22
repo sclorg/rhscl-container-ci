@@ -1,8 +1,9 @@
-mariadb		rh	sclorg	mariadb-container
-ror		rh	sclorg	ror-container
-devtoolset	rh	sclorg	devtoolset-container
-httpd		rh	sclorg	httpd-container
-nginx		rh	sclorg	nginx-container
-passenger	rh	sclorg	passenger-container
-thermostat	rh	sclorg	thermostat-container
-varnish		rh	sclorg	varnish-container
+mariadb		rh	sclorg	mariadb-container	rhscl-images-new-centos_centos7-trigger
+ror		rh	sclorg	ror-container		rhscl-images-new-centos_centos7-trigger
+devtoolset	rh	sclorg	devtoolset-container	rhscl-images-new-centos_centos7-trigger
+httpd		rh	sclorg	httpd-container		TODO-s2i
+nginx		rh	sclorg	nginx-container		TODO-s2i
+passenger	rh	sclorg	passenger-container	TODO-s2i
+thermostat	rh	sclorg	thermostat-container	rhscl-images-new-centos_centos7-trigger
+varnish		rh	sclorg	varnish-container	TODO-s2i
+postgresql	rh	sclorg	postgresql-container	rhscl-images-new-centos_centos7-trigger

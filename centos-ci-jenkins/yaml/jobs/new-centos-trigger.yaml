@@ -1,0 +1,24 @@
+- project:
+    name: new-centos_centos7-trigger
+    jobs:
+        - 'rhscl-images-{name}'
+
+- job-template:
+    name: 'rhscl-images-{name}'
+    node: rhscl_slave_1_root
+    triggers:
+      - script:
+          cron: 'H * * * *'
+          script: |
+            #!/bin/bash
+            set -ex
+
+            IMAGE=centos:centos7
+            docker pull docker.io/$IMAGE
+
+            if [ "$(docker inspect --format='{{{{.Id}}}}' docker.io/$IMAGE)" != "$(docker inspect --format='{{{{.Id}}}}' centos:images)" ]; then
+              docker tag docker.io/$IMAGE centos:images
+              exit 0
+            else
+              exit 1
+            fi

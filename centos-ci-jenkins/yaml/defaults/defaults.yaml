@@ -13,15 +13,6 @@
     project-type: freestyle
     concurrent: false
     logrotate:
-      numToKeep: 10
+      numToKeep: 25
     wrappers:
       - timestamps
-    node: sclo-sig
-    properties:
-      - github:
-          url: https://github.com/{gituser}/{gitproject}
-      - raw:
-          xml: |
-            <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.17.1">
-              <optOut>true</optOut>
-            </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
