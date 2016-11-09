@@ -10,12 +10,7 @@
     properties:
       - github:
           url: https://github.com/{gituser}/{gitproject}
-      - raw:
-          xml: |
-            <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.17.1">
-              <optOut>true</optOut>
-            </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
-    node: rhscl_slave_1_root
+    node: slave_rhel7_root
     scm:
         - images-pull-test:
             gituser: '{gituser}'
@@ -29,4 +24,11 @@
             set -ex
 
             git submodule update --init
-            make test SKIP_SQUASH=1 UPDATE_BASE=1 TARGER=rhel7
+
+            # Test only RHSCL images (OpenShift images can't be built in RHEL)
+            NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||" | tr ' ' '\n')
+            VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||" | tr ' ' '\n')
+            NAMESPACE_CENTOS=$(comm -3 <(echo "$VERSIONS") <(echo "$NAMESPACE_OPENSHIFT"))
+
+            # Run image tests
+            make test SKIP_SQUASH=1 UPDATE_BASE=1 TARGET=rhel7 VERSION="$(echo $NAMESPACE_CENTOS)"

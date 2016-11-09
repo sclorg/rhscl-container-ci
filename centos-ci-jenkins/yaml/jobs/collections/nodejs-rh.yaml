@@ -1,7 +1,7 @@
 - project:
-    name: httpd
+    name: nodejs
     namespace: rh
-    gitproject: httpd-container
+    gitproject: s2i-nodejs-container
     gituser: sclorg
     release: 7
     arch: x86_64

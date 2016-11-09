@@ -10,7 +10,7 @@
     properties:
       - github:
           url: https://github.com/{gituser}/{gitproject}
-    node: rhscl_slave_1_root
+    node: slave_rhel7_root
     scm:
         - images-build:
             gituser: '{gituser}'
@@ -24,22 +24,38 @@
             #!/bin/bash
             set -ex
 
-            make test SKIP_SQUASH=1 TAG_ON_SUCCESS=true UPDATE_BASE=1
+            #
+            # TODO: now for testing images push into personal docker hub namespace!!!
+            #
+            # Docker Hub namespace where to push
+            HUB_NAMESPACE=mskalick
 
+            # In what namespace version have to be tagged
             NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||" | tr ' ' '\n')
             VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||" | tr ' ' '\n')
             NAMESPACE_CENTOS=$(comm -3 <(echo "$VERSIONS") <(echo "$NAMESPACE_OPENSHIFT"))
 
-            # Try to push in parallel
-            #
-            # TODO: now for testing images push into personal docker hub namespace!!!
-            #
+            # Remove resulted images - more disk space + no 'docker tag' failure
             for version in $NAMESPACE_OPENSHIFT; do
-              docker tag openshift/{name}-${{version/./}}-centos{release} docker.io/mskalick/{name}-${{version/./}}-centos{release}
-              docker push docker.io/mskalick/{name}-${{version/./}}-centos{release} &
+              docker rmi -f openshift/{name}-${{version/./}}-centos{release} || :
             done
             for version in $NAMESPACE_CENTOS; do
-              docker tag centos/{name}-${{version/./}}-centos{release} docker.io/mskalick/{name}-${{version/./}}-centos{release}
-              docker push docker.io/mskalick/{name}-${{version/./}}-centos{release} &
+              docker rmi -f centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} || :
+            done
+
+            # Run image tests
+            make test SKIP_SQUASH=1 TAG_ON_SUCCESS=true UPDATE_BASE=1
+
+            # Try to push in parallel
+            #for version in $NAMESPACE_OPENSHIFT; do
+            #  docker tag openshift/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
+            #  docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
+            #done
+            for version in $NAMESPACE_CENTOS; do
+              docker tag centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
+              docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
             done
             wait
+#    publishers:
+#        - email:
+#            recipients: 'mskalick@redhat.com hhorak@redhat.com'

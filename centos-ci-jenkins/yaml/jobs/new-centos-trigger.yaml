@@ -5,7 +5,7 @@
 
 - job-template:
     name: 'rhscl-images-{name}'
-    node: rhscl_slave_1_root
+    node: rhel7_slave_1_root
     triggers:
       - script:
           cron: 'H * * * *'
@@ -22,3 +22,12 @@
             else
               exit 1
             fi
+    builders:
+      - shell: |
+          #!/bin/bash
+          set -ex
+
+          IMAGE=centos:centos7
+          docker pull docker.io/$IMAGE
+
+          docker tag docker.io/$IMAGE centos:images

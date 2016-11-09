@@ -8,13 +8,13 @@
 #   project_trigger: projects which can trigger this job
 #   context: context name for github statuses
 - job-template:
-    name: 'SCLo-container-{name}-{namespace}'
+    name: 'SCLo-container-s2i-base-{namespace}'
     properties:
       - github:
           url: https://github.com/{gituser}/{gitproject}
     node: sclo-sig
     scm:
-        - images-pull-test:
+        - s2i-base-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
@@ -33,6 +33,11 @@
             ssh -F ssh_config host service docker start
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             ssh -F ssh_config host 'cd sources && git submodule update --init'
-            ssh -F ssh_config host make test SKIP_SQUASH=1 UPDATE_BASE=1 -C sources
+            ssh -F ssh_config host cd souces; make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
+              for remote in $(git remote | grep test_); do \
+                echo "Testing ${{remote#test_}}/master"; \
+                git checkout $remote/master; \
+                make test SKIP_SQUASH=1; \
+              done
     publishers:
         - cico_done

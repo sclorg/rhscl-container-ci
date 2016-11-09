@@ -1,0 +1,50 @@
+# parameters:
+#   name: software collection name, e.g. httpd24
+#   namespace: SCL namespace/prefix, e.g. rh
+#   release: version of RHEL/CentOS to test, e.g. 6
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
+#   project_trigger: projects which can trigger this job
+- job-template:
+    name: 'rhscl-images-s2i-base-{namespace}-build'
+    properties:
+      - github:
+          url: https://github.com/{gituser}/{gitproject}
+    node: slave_rhel7_root
+    scm:
+        - s2i-base-build:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - github
+        - reverse:
+            jobs: '{project_trigger}'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            #
+            # TODO: now for testing images push into personal docker hub namespace!!!
+            #
+            # Docker Hub namespace where to push
+            HUB_NAMESPACE=mskalick
+
+            # Remove resulted images - more disk space + no 'docker tag' failure
+            docker rmi -f openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} || :
+
+            # Run base image tests and tests of each dependent image
+            make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true
+            for remote in $(git remote | grep test_); do
+              echo "Testing ${{remote#test_}}/master"
+              git checkout $remote/master
+              make test SKIP_SQUASH=1
+            done
+
+            # Try to push in parallel
+            docker tag openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release}
+            docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} &
+            wait
+#    publishers:
+#        - email:
+#            recipients: 'mskalick@redhat.com hhorak@redhat.com'
