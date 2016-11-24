@@ -33,6 +33,6 @@
             ssh -F ssh_config host service docker start
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             ssh -F ssh_config host 'cd sources && git submodule update --init'
-            ssh -F ssh_config host make test SKIP_SQUASH=1 UPDATE_BASE=1 -C sources
+            ssh -F ssh_config host 'setenforce 0; make test SKIP_SQUASH=1 UPDATE_BASE=1 -C sources'
     publishers:
         - cico_done
