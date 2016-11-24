@@ -36,9 +36,9 @@
               git checkout $remote/master
 
               # Test only RHSCL images (OpenShift images can't be built in RHEL)
-              NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||" | tr ' ' '\n' | sort)
-              VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||" | tr ' ' '\n' | sort)
-              NAMESPACE_CENTOS=$(comm -3 <(echo "$VERSIONS") <(echo "$NAMESPACE_OPENSHIFT"))
+              NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||")
+              VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||")
+              NAMESPACE_CENTOS=$(python -c "print(' '.join(set(\"$VERSIONS\".split(' '))-set(\"$NAMESPACE_OPENSHIFT\".split(' '))))")
 
               make test SKIP_SQUASH=1 TARGET=rhel7 VERSIONS="$(echo $NAMESPACE_CENTOS)"
             done

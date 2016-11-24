@@ -31,9 +31,9 @@
             HUB_NAMESPACE=mskalick
 
             # In what namespace version have to be tagged
-            NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||" | tr ' ' '\n' | sort)
-            VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||" | tr ' ' '\n' | sort)
-            NAMESPACE_CENTOS=$(comm -3 <(echo "$VERSIONS") <(echo "$NAMESPACE_OPENSHIFT"))
+            NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||")
+            VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||")
+            NAMESPACE_CENTOS=$(python -c "print(' '.join(set(\"$VERSIONS\".split(' '))-set(\"$NAMESPACE_OPENSHIFT\".split(' '))))")
 
             # Remove resulted images - more disk space + no 'docker tag' failure
             for version in $NAMESPACE_OPENSHIFT; do
