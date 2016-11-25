@@ -4,11 +4,11 @@
     gitproject: s2i-ruby-container
     gituser: sclorg
     release: 7
-    arch: x86_64
-    project_trigger: rhscl-images-s2i-base-rh-build
     jobs:
         - 'SCLo-container-{name}-{namespace}':
             context: 'ci.centos.org'
+            arch: x86_64
         - 'rhscl-images-{name}-{namespace}':
             context: 'RHEL7'
-        - 'rhscl-images-{name}-{namespace}-build'
+        - 'rhscl-images-{name}-{namespace}-build':
+            project_trigger: rhscl-images-s2i-base-rh-build

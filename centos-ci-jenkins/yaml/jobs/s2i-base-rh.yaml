@@ -4,11 +4,11 @@
     gitproject: s2i-base
     gituser: openshift
     release: 7
-    arch: x86_64
-    project_trigger: rhscl-images-new-centos_centos7-trigger
     jobs:
         - 'SCLo-container-s2i-base-{namespace}':
             context: 'ci.centos.org'
+            arch: x86_64
         - 'rhscl-images-s2i-base-{namespace}':
             context: 'RHEL7'
-        - 'rhscl-images-s2i-base-{namespace}-build'
+        - 'rhscl-images-s2i-base-{namespace}-build':
+            project_trigger: rhscl-images-new-centos_centos7-trigger

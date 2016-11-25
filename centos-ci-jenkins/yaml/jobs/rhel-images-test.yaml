@@ -1,9 +1,9 @@
 # parameters:
 #   name: software collection name, e.g. httpd24
 #   namespace: SCL namespace/prefix, e.g. rh
+#   release: version of RHEL/CentOS to test, e.g. 6
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
-#   project_trigger: projects which can trigger this job
 #   context: context name for github statuses
 - job-template:
     name: 'rhscl-images-{name}-{namespace}'

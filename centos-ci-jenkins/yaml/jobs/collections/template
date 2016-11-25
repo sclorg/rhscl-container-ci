@@ -4,11 +4,11 @@
     gitproject: %GITPROJECT%
     gituser: %GITUSER%
     release: 7
-    arch: x86_64
-    project_trigger: %TRIGGER%
     jobs:
         - 'SCLo-container-{name}-{namespace}':
             context: 'ci.centos.org'
+            arch: x86_64
         - 'rhscl-images-{name}-{namespace}':
             context: 'RHEL7'
-        - 'rhscl-images-{name}-{namespace}-build'
+        - 'rhscl-images-{name}-{namespace}-build':
+            project_trigger: %TRIGGER%
