@@ -54,3 +54,11 @@ During updating jobs you can select jobs by globbing. For example to update jobs
 or to update the rest of jobs in different jenkins instance, update your `jenkins_jobs.ini` file and run
 
     ./run.sh update rhscl-images-*
+
+## How to add tests for a new image
+
+When a new image is created and we want to add testing of if, we only need to add a new entry to `./configuration` file and re-generate jobs:
+
+    ./run.sh test . rhscl-images* -o /tmp/jobs
+
+Then a PR should include `./configuration` and the newly created file `./yaml/jobs/collections/<newspec>`.

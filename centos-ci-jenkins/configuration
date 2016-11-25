@@ -5,6 +5,7 @@ mysql		rh	sclorg	mysql-container		rhscl-images-new-centos_centos7-trigger
 ror		rh	sclorg	ror-container		rhscl-images-new-centos_centos7-trigger
 devtoolset	rh	sclorg	devtoolset-container	rhscl-images-new-centos_centos7-trigger
 thermostat	rh	sclorg	thermostat-container	rhscl-images-new-centos_centos7-trigger
+redis		rh	sclorg	redis-container		rhscl-images-new-centos_centos7-trigger
 httpd		rh	sclorg	httpd-container		rhscl-images-s2i-base-rh-build
 nginx		rh	sclorg	nginx-container		rhscl-images-s2i-base-rh-build
 passenger	rh	sclorg	passenger-container	rhscl-images-s2i-base-rh-build
