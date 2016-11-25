@@ -5,6 +5,7 @@
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
 #   project_trigger: projects which can trigger this job
+#   hub_namespace: image namespace where to push image in Docker Hub
 - job-template:
     name: 'rhscl-images-{name}-{namespace}-build'
     properties:
@@ -24,11 +25,8 @@
             #!/bin/bash
             set -ex
 
-            #
-            # TODO: now for testing images push into personal docker hub namespace!!!
-            #
             # Docker Hub namespace where to push
-            HUB_NAMESPACE=mskalick
+            HUB_NAMESPACE={hub_namespace}
 
             # In what namespace version have to be tagged
             NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||")
@@ -53,7 +51,7 @@
             #done
             for version in $NAMESPACE_CENTOS; do
               docker tag centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
-              docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
+              HOME=.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
             done
             wait
 #    publishers:

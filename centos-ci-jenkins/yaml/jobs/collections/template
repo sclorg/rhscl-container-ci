@@ -12,3 +12,4 @@
             context: 'RHEL7'
         - 'rhscl-images-{name}-{namespace}-build':
             project_trigger: %TRIGGER%
+            hub_namespace: %HUB_NAMESPACE%

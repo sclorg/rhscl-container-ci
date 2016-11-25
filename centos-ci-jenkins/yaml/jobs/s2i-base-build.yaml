@@ -5,6 +5,7 @@
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
 #   project_trigger: projects which can trigger this job
+#   hub_namespace: image namespace where to push image in Docker Hub
 - job-template:
     name: 'rhscl-images-s2i-base-{namespace}-build'
     properties:
@@ -24,11 +25,8 @@
             #!/bin/bash
             set -ex
 
-            #
-            # TODO: now for testing images push into personal docker hub namespace!!!
-            #
             # Docker Hub namespace where to push
-            HUB_NAMESPACE=mskalick
+            HUB_NAMESPACE={hub_namespace}
 
             # Remove resulted images - more disk space + no 'docker tag' failure
             docker rmi -f openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} || :
@@ -43,7 +41,7 @@
 
             # Try to push in parallel
             docker tag openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release}
-            docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} &
+            HOME=.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} &
             wait
 #    publishers:
 #        - email:

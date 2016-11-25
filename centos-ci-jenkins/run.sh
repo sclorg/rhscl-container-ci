@@ -31,10 +31,10 @@ fi
 
 # Generate jobs from collection list
 OVERRIDE_OS_MAJOR_VERSION=7
-cat configuration | while read scl namespace gituser gitproject trigger; do
+cat configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
   yaml=$THISDIR/yaml/jobs/collections/${scl}-${namespace}.yaml
   [ -f $yaml ] || \
-    sed "s/%SCL%/${scl}/g; s/%NAMESPACE%/${namespace}/g; s|%GITUSER%|${gituser}|g; s|%GITPROJECT%|${gitproject}|g; s|%TRIGGER%|${trigger}|g;" \
+    sed "s/%SCL%/${scl}/g; s/%NAMESPACE%/${namespace}/g; s|%GITUSER%|${gituser}|g; s|%GITPROJECT%|${gitproject}|g; s|%TRIGGER%|${trigger}|g; s|%HUB_NAMESPACE%|$hub_namespace|g;" \
       $THISDIR/yaml/jobs/collections/template > $yaml
 done
 
