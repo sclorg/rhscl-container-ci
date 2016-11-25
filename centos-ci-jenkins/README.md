@@ -62,3 +62,5 @@ When a new image is created and we want to add testing of if, we only need to ad
     ./run.sh test . rhscl-images* -o /tmp/jobs
 
 Then a PR should include `./configuration` and the newly created file `./yaml/jobs/collections/<newspec>`.
+
+In order to allow testing of the pull-requests, make sure the ci user on github has permissions to write to the new repository.
