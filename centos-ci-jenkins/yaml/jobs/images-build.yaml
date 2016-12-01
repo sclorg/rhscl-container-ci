@@ -51,7 +51,7 @@
             #done
             for version in $NAMESPACE_CENTOS; do
               docker tag centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
-              HOME=.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
+              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
             done
             wait
     publishers:
