@@ -54,6 +54,6 @@
               HOME=.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
             done
             wait
-#    publishers:
-#        - email:
-#            recipients: 'mskalick@redhat.com hhorak@redhat.com'
+    publishers:
+        - email:
+            recipients: 'mskalick@redhat.com hhorak@redhat.com'

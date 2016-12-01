@@ -43,6 +43,6 @@
             docker tag openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release}
             HOME=.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} &
             wait
-#    publishers:
-#        - email:
-#            recipients: 'mskalick@redhat.com hhorak@redhat.com'
+    publishers:
+        - email:
+            recipients: 'mskalick@redhat.com hhorak@redhat.com'
