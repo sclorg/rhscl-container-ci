@@ -1,7 +1,7 @@
 mariadb		rh	sclorg	mariadb-container	rhscl-images-new-centos_centos7-trigger		centos
-postgresql	rh	sclorg	postgresql-container	rhscl-images-new-centos_centos7-trigger		mskalick
-mongodb		rh	sclorg	mongodb-container	rhscl-images-new-centos_centos7-trigger		mskalick
-mysql		rh	sclorg	mysql-container		rhscl-images-new-centos_centos7-trigger		mskalick
+postgresql	rh	sclorg	postgresql-container	rhscl-images-new-centos_centos7-trigger		centos
+mongodb		rh	sclorg	mongodb-container	rhscl-images-new-centos_centos7-trigger		centos
+mysql		rh	sclorg	mysql-container		rhscl-images-new-centos_centos7-trigger		centos
 ror		rh	sclorg	ror-container		rhscl-images-new-centos_centos7-trigger		centos
 devtoolset	rh	sclorg	devtoolset-container	rhscl-images-new-centos_centos7-trigger		centos
 thermostat	rh	sclorg	thermostat-container	rhscl-images-new-centos_centos7-trigger		centos
@@ -10,8 +10,8 @@ httpd		rh	sclorg	httpd-container		rhscl-images-s2i-base-rh-build			centos
 nginx		rh	sclorg	nginx-container		rhscl-images-s2i-base-rh-build			centos
 passenger	rh	sclorg	passenger-container	rhscl-images-s2i-base-rh-build			centos
 varnish		rh	sclorg	varnish-container	rhscl-images-s2i-base-rh-build			centos
-php		rh	sclorg	s2i-php-container	rhscl-images-s2i-base-rh-build			mskalick
-python		rh	sclorg	s2i-python-container	rhscl-images-s2i-base-rh-build			mskalick
-perl		rh	sclorg	s2i-perl-container	rhscl-images-s2i-base-rh-build			mskalick
-nodejs		rh	sclorg	s2i-nodejs-container	rhscl-images-s2i-base-rh-build			mskalick
-ruby		rh	sclorg	s2i-ruby-container	rhscl-images-s2i-base-rh-build			mskalick
+php		rh	sclorg	s2i-php-container	rhscl-images-s2i-base-rh-build			centos
+python		rh	sclorg	s2i-python-container	rhscl-images-s2i-base-rh-build			centos
+perl		rh	sclorg	s2i-perl-container	rhscl-images-s2i-base-rh-build			centos
+nodejs		rh	sclorg	s2i-nodejs-container	rhscl-images-s2i-base-rh-build			centos
+ruby		rh	sclorg	s2i-ruby-container	rhscl-images-s2i-base-rh-build			centos

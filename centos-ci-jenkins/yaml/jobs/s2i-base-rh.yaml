@@ -12,4 +12,4 @@
             context: 'RHEL7'
         - 'rhscl-images-s2i-base-{namespace}-build':
             project_trigger: rhscl-images-new-centos_centos7-trigger
-            hub_namespace: mskalick
+            hub_namespace: centos
