@@ -5,6 +5,7 @@
 
 - job-template:
     name: 'rhscl-images-{name}'
+    defaults: 'triggers'
     node: rhel7_slave_1_root
     triggers:
       - script:

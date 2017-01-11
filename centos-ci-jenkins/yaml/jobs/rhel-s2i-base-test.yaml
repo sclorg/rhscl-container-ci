@@ -7,9 +7,6 @@
 #   context: context name for github statuses
 - job-template:
     name: 'rhscl-images-s2i-base-{namespace}'
-    properties:
-      - github:
-          url: https://github.com/{gituser}/{gitproject}
     node: slave_rhel7_root
     scm:
         - s2i-base-pull-test:

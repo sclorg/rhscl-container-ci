@@ -8,9 +8,6 @@
 #   hub_namespace: image namespace where to push image in Docker Hub
 - job-template:
     name: 'rhscl-images-{name}-{namespace}-build'
-    properties:
-      - github:
-          url: https://github.com/{gituser}/{gitproject}
     node: slave_rhel7_root
     scm:
         - images-build:
