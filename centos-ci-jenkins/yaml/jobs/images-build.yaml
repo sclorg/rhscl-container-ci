@@ -14,7 +14,7 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github
+        - scm_fifteen_minutes
         - reverse:
             jobs: '{project_trigger}'
     builders:
@@ -41,16 +41,15 @@
             # Run image tests
             make test SKIP_SQUASH=1 TAG_ON_SUCCESS=true UPDATE_BASE=1
 
-            # Try to push in parallel
+            # Push to Docker Hub
             #for version in $NAMESPACE_OPENSHIFT; do
             #  docker tag openshift/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
             #  docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
             #done
             for version in $NAMESPACE_CENTOS; do
               docker tag centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
-              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
+              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
             done
-            wait
     publishers:
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'

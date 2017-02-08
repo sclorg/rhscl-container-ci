@@ -14,7 +14,7 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github
+        - scm_fifteen_minutes
         - reverse:
             jobs: '{project_trigger}'
     builders:
@@ -36,10 +36,9 @@
               make test SKIP_SQUASH=1
             done
 
-            # Try to push in parallel
+            # Push to Docker Hub
             docker tag openshift/{name}-centos{release} docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release}
-            HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release} &
-            wait
+            HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/s2i-{name}-centos{release}
     publishers:
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'
