@@ -20,10 +20,10 @@
             #!/bin/bash
             set -ex
 
+            git submodule update --init
+
             # Remove resulted images - more disk space
             docker rmi -f openshift/{name}-centos{release} || :
-
-            git submodule update --init
 
             # Run base image tests
             make test SKIP_SQUASH=1 UPDATE_BASE=1 TARGET=rhel7 TAG_ON_SUCCESS=true

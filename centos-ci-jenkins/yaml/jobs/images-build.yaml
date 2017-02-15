@@ -22,6 +22,8 @@
             #!/bin/bash
             set -ex
 
+            git submodule update --init
+
             # Docker Hub namespace where to push
             HUB_NAMESPACE={hub_namespace}
 
