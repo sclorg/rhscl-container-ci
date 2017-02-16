@@ -4,8 +4,8 @@
 # parameters:
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
-#   name: software collection name, e.g. httpd24
-#   namespace: SCL namespace/prefix, e.g. rh
+#   name: software collection name with namespace, e.g. httpd24-rh
+#   blocks: regular expression defining what jobs to block
 - defaults:
     description: |
       This job is automatically updated by Jenkins Job Builder, any manual
@@ -23,7 +23,7 @@
           url: https://github.com/{gituser}/{gitproject}
       - build-blocker:
           blocking-jobs:
-            - "rhscl-images-{name}-{namespace}*"
+            - "{blocks}"
           block-level: 'NODE'
     wrappers:
       - timestamps

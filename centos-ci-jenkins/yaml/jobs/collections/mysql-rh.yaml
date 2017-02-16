@@ -1,15 +1,15 @@
 - project:
-    name: mysql
-    namespace: rh
+    name: mysql-rh
     gitproject: mysql-container
     gituser: sclorg
     release: 7
+    blocks: 'rhscl-images-mysql*'
     jobs:
-        - 'SCLo-container-{name}-{namespace}':
+        - 'SCLo-container-{name}':
             context: 'ci.centos.org'
             arch: x86_64
-        - 'rhscl-images-{name}-{namespace}':
+        - 'rhscl-images-{name}':
             context: 'RHEL7'
-        - 'rhscl-images-{name}-{namespace}-build':
-            project_trigger: rhscl-images-new-centos_centos7-trigger
+        - 'rhscl-images-{name}-build':
+            project_trigger: rhscl-images-centos_centos7-rh-trigger
             hub_namespace: centos

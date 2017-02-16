@@ -1,9 +1,9 @@
 - project:
-    name: varnish-rh
-    gitproject: varnish-container
+    name: s2i-base-rh
+    gitproject: s2i-base-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-varnish*'
+    blocks: 'rhscl-images-s2i-base*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'
@@ -11,5 +11,5 @@
         - 'rhscl-images-{name}':
             context: 'RHEL7'
         - 'rhscl-images-{name}-build':
-            project_trigger: rhscl-images-s2i-base-rh-build
+            project_trigger: rhscl-images-centos_centos7-rh-trigger
             hub_namespace: centos

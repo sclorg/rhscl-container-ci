@@ -1,13 +1,12 @@
 # parameters:
-#   name: software collection name, e.g. httpd24
-#   namespace: SCL namespace/prefix, e.g. rh
+#   name: software collection name with namespace, e.g. httpd24-rh
 #   release: version of RHEL/CentOS to test, e.g. 6
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
 #   project_trigger: projects which can trigger this job
 #   hub_namespace: image namespace where to push image in Docker Hub
 - job-template:
-    name: 'rhscl-images-{name}-{namespace}-build'
+    name: 'rhscl-images-{name}-build'
     node: slave_rhel7_root
     scm:
         - images-build:
@@ -18,6 +17,8 @@
         - reverse:
             jobs: '{project_trigger}'
     builders:
+        - add_dependencies_remote:
+            name: '{name}'
         - shell: |
             #!/bin/bash
             set -ex
@@ -28,29 +29,43 @@
             HUB_NAMESPACE={hub_namespace}
 
             # In what namespace version have to be tagged
-            NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||")
             VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||")
-            NAMESPACE_CENTOS=$(python -c "print(' '.join(set(\"$VERSIONS\".split(' '))-set(\"$NAMESPACE_OPENSHIFT\".split(' '))))")
+
+            IMAGES=""
+            for version in ${{VERSIONS:-^}}; do
+              # If no version specified, remove middle part of image name
+              image="{name}"
+              image="${{image%-*}}-${{version/./}}-centos{release}"
+              IMAGES+="${{image/^-/}} "
+            done
 
             # Remove resulted images - more disk space + no 'docker tag' failure
-            for version in $NAMESPACE_OPENSHIFT; do
-              docker rmi -f openshift/{name}-${{version/./}}-centos{release} || :
-            done
-            for version in $NAMESPACE_CENTOS; do
-              docker rmi -f centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} || :
+            for image_name in $IMAGES; do
+              docker rmi -f centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}} || :
             done
 
-            # Run image tests
-            make test SKIP_SQUASH=1 TAG_ON_SUCCESS=true UPDATE_BASE=1
+            # Run base image tests and tests of each dependent image
+            make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true
+
+            # TODO
+            # Hack to be able to handle s2i-base image same as other images
+            if [[ "{name}" == "s2i-base-"* ]]; then
+              # Use same naming format as other images
+              docker tag openshift/base-centos{release} centos/s2i-base-centos{release}
+              # Remove resulted images - more disk space
+              docker rmi -f openshift/base-centos{release} || :
+            fi
+
+            for remote in $(git remote | grep test_); do
+              echo "Testing ${{remote#test_}}/master"
+              git checkout $remote/master
+              make test SKIP_SQUASH=1
+            done
 
             # Push to Docker Hub
-            #for version in $NAMESPACE_OPENSHIFT; do
-            #  docker tag openshift/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
-            #  docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release} &
-            #done
-            for version in $NAMESPACE_CENTOS; do
-              docker tag centos/{name}-${{version/./}}-centos{release} docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
-              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/{name}-${{version/./}}-centos{release}
+            for image_name in $IMAGES; do
+              docker tag centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}}
+              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/${{image_name}}
             done
     publishers:
         - email:

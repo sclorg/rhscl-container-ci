@@ -1,12 +1,11 @@
 # parameters:
-#   name: software collection name, e.g. httpd24
-#   namespace: SCL namespace/prefix, e.g. rh
+#   name: software collection name with namespace, e.g. httpd24-rh
 #   release: version of RHEL/CentOS to test, e.g. 6
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
 #   context: context name for github statuses
 - job-template:
-    name: 'rhscl-images-{name}-{namespace}'
+    name: 'rhscl-images-{name}'
     node: slave_rhel7_root
     scm:
         - images-pull-test:
@@ -16,16 +15,22 @@
         - github-pr:
             context: '{context}'
     builders:
+        - add_dependencies_remote:
+            name: '{name}'
         - shell: |
             #!/bin/bash
             set -ex
 
             git submodule update --init
 
-            # Test only RHSCL images (OpenShift images can't be built in RHEL)
-            NAMESPACE_OPENSHIFT=$(grep "OPENSHIFT_NAMESPACES = " Makefile | sed "s|OPENSHIFT_NAMESPACES = ||")
-            VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||")
-            NAMESPACE_CENTOS=$(python -c "print(' '.join(set(\"$VERSIONS\".split(' '))-set(\"$NAMESPACE_OPENSHIFT\".split(' '))))")
-
-            # Run image tests
-            make test SKIP_SQUASH=1 UPDATE_BASE=1 TARGET=rhel7 VERSIONS="$(echo $NAMESPACE_CENTOS)"
+            # Run base image tests and tests of each dependent image
+            make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true TARGET=rhel7
+            if [[ "{name}" == "s2i-base-*" ]]; then
+              # Use same naming format for s2i-base as other images use
+              docker tag openshift/base-centos{release} centos/{name}-centos{release}
+            fi
+            for remote in $(git remote | grep test_); do
+              echo "Testing ${{remote#test_}}/master"
+              git checkout $remote/master
+              make test SKIP_SQUASH=1 TARGET=rhel7
+            done

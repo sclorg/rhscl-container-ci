@@ -1,13 +1,12 @@
 # parameters:
-#   name: software collection name, e.g. httpd24
-#   namespace: SCL namespace/prefix, e.g. rh
+#   name: software collection name with namespace, e.g. httpd24-rh
 #   release: version of CentOS to test, e.g. 6
 #   arch: architecture of CentOS to test, e.g. x86_64
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
 #   context: context name for github statuses
 - job-template:
-    name: 'SCLo-container-{name}-{namespace}'
+    name: 'SCLo-container-{name}'
     node: sclo-sig
     scm:
         - images-pull-test:
@@ -17,6 +16,8 @@
         - github-pr:
             context: '{context}'
     builders:
+        - add_dependencies_remote:
+            name: '{name}'
         - shell: |
             cico node get -f value --retry-count 5 --retry-interval 60 --arch {arch} --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
             tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
@@ -29,6 +30,15 @@
             ssh -F ssh_config host service docker start
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             ssh -F ssh_config host 'cd sources && git submodule update --init'
-            ssh -F ssh_config host 'setenforce 0; make test SKIP_SQUASH=1 UPDATE_BASE=1 -C sources'
+            ssh -F ssh_config host 'setenforce 0; cd sources; make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
+              if [[ "{name}" == "s2i-base-*" ]]; then \
+                # Use same naming format for s2i-base as other images use; \
+                docker tag openshift/base-centos{release} centos/{name}-centos{release}; \
+              fi; \
+              for remote in $(git remote | grep test_); do \
+                echo "Testing ${{remote#test_}}/master"; \
+                git checkout $remote/master; \
+                make test SKIP_SQUASH=1; \
+              done'
     publishers:
         - cico_done

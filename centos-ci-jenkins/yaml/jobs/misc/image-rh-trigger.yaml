@@ -1,0 +1,38 @@
+- project:
+    name: centos_centos7-rh
+    jobs:
+        - 'rhscl-images-{name}-trigger'
+
+- job-template:
+    name: 'rhscl-images-{name}-trigger'
+    defaults: 'triggers'
+    node: rhel7_slave_1_root
+    triggers:
+      - script:
+          cron: 'H * * * *'
+          script: |
+            #!/bin/bash
+            set -ex
+
+            image_name=$(echo "{name}" | cut -f1 -d'-')
+            IMAGE="${{image_name/_/:}}"
+
+            docker pull docker.io/$IMAGE
+
+            if [ "$(docker inspect --format='{{{{.Id}}}}' docker.io/$IMAGE)" != "$(docker inspect --format='{{{{.Id}}}}' {name}:images)" ]; then
+              docker tag docker.io/$IMAGE {name}:images
+              exit 0
+            else
+              exit 1
+            fi
+    builders:
+      - shell: |
+          #!/bin/bash
+          set -ex
+
+          image_name=$(echo "{name}" | cut -f1 -d'-')
+          IMAGE="${{image_name/_/:}}"
+
+          docker pull docker.io/$IMAGE
+
+          docker tag docker.io/$IMAGE {name}:images
