@@ -10,6 +10,9 @@
             arch: x86_64
         - 'rhscl-images-{name}':
             context: 'RHEL7'
+        - 'SCLo-container-{name}-{target}':
+            target: 'test-openshift'
+            arch: x86_64
         - 'rhscl-images-{name}-build':
             project_trigger: rhscl-images-s2i-base-rh-build
             hub_namespace: centos

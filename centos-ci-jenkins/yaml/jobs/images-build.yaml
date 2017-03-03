@@ -1,3 +1,5 @@
+# Can be started only by new commit in repository, manually or by upstream job
+#
 # parameters:
 #   name: software collection name with namespace, e.g. httpd24-rh
 #   release: version of RHEL/CentOS to test, e.g. 6
@@ -7,7 +9,7 @@
 #   hub_namespace: image namespace where to push image in Docker Hub
 - job-template:
     name: 'rhscl-images-{name}-build'
-    node: slave_rhel7_root
+    node: slave_rhel{release}_root
     scm:
         - images-build:
             gituser: '{gituser}'

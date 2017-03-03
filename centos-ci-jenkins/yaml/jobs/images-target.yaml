@@ -1,4 +1,4 @@
-# Can be started by [test] in PR comment or new commit from sclorg/ admin
+# Can be started only by [<MAKE TARGET>] in PR comment
 #
 # parameters:
 #   name: software collection name with namespace, e.g. httpd24-rh
@@ -6,17 +6,18 @@
 #   arch: architecture of CentOS to test, e.g. x86_64
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
-#   context: context name for github statuses
+#   target: make target to run
 - job-template:
-    name: 'SCLo-container-{name}'
+    name: 'SCLo-container-{name}-{target}'
     node: sclo-sig
     scm:
         - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr:
-            context: '{context}'
+        - github-pr-target:
+            context: 'CentOS{release} make {target}'
+            trigger-phrase: '.*\[{target}\].*'
     builders:
         - add_dependencies_remote:
             name: '{name}'
@@ -33,13 +34,15 @@
             scp -F ssh_config -rp $(pwd) host:sources
             ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh
             ssh -F ssh_config host yum -y install source-to-image
+            # Configure docker for OpenShift and flush IPtables before starting
+            ssh -F ssh_config host 'sed -i -e "s|# INSECURE_REGISTRY.*|INSECURE_REGISTRY=\"--insecure-registry 172.30.0.0/16\"|" /etc/sysconfig/docker; iptables -F'
             ssh -F ssh_config host service docker start
             # Enable sudo for ssh (required by test cases)
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             # Prepare sources (shared build scripts)
             ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
-            ssh -F ssh_config host 'set -ex; setenforce 0; cd sources; make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
+            ssh -F ssh_config host 'set -ex; setenforce 0; cd sources; make {target} SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
               if [[ "{name}" == "s2i-base-*" ]]; then \
                 # Use same naming format for s2i-base as other images use; \
                 docker tag openshift/base-centos{release} centos/{name}-centos{release}; \
@@ -47,7 +50,7 @@
               for remote in $(git remote | grep test_); do \
                 echo "Testing ${{remote#test_}}/master"; \
                 git checkout $remote/master; \
-                make test SKIP_SQUASH=1; \
+                make {target} SKIP_SQUASH=1; \
               done'
     publishers:
         - cico_done

@@ -1,0 +1,16 @@
+- trigger:
+    name: github-pr-target
+    triggers:
+      - github-pull-request:
+          admin-list:
+            - hhorak
+          white-list:
+            - hhorak
+          org-list:
+            - sclorg
+          allow-whitelist-orgs-as-admins: true
+          cron: 'H/5 * * * *'
+          build-desc-template: "Checks whether PR does not break anything"
+          trigger-phrase: '{trigger-phrase}'
+          only-trigger-phrase: true
+          status-context: '{context}'

@@ -1,21 +1,22 @@
-# Can be started by [test] in PR comment or new commit from sclorg/ admin
+# Can be started only by [<MAKE TARGET>] in PR comment
 #
 # parameters:
 #   name: software collection name with namespace, e.g. httpd24-rh
 #   release: version of RHEL/CentOS to test, e.g. 6
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
-#   context: context name for github statuses
+#   target: make target to run
 - job-template:
-    name: 'rhscl-images-{name}'
+    name: 'rhscl-images-{name}-{target}'
     node: slave_rhel{release}_root
     scm:
         - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr:
-            context: '{context}'
+        - github-pr-target:
+            context: 'RHEL{release} make {target}'
+            trigger-phrase: '.*\[{target}\].*'
     builders:
         - add_dependencies_remote:
             name: '{name}'
@@ -26,7 +27,7 @@
             # Prepare sources (shared build scripts)
             git submodule update --init
             # Run make for base image and for each dependent image
-            make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true TARGET=rhel{release}
+            make {target} SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true TARGET=rhel{release}
             if [[ "{name}" == "s2i-base-*" ]]; then
               # Use same naming format for s2i-base as other images use
               docker tag openshift/base-centos{release} centos/{name}-centos{release}
@@ -34,5 +35,5 @@
             for remote in $(git remote | grep test_); do
               echo "Testing ${{remote#test_}}/master"
               git checkout $remote/master
-              make test SKIP_SQUASH=1 TARGET=rhel{release}
+              make {target} SKIP_SQUASH=1 TARGET=rhel{release}
             done
