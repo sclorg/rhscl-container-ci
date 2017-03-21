@@ -27,10 +27,6 @@
             git submodule update --init
             # Run make for base image and for each dependent image
             make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true TARGET=rhel{release}
-            if [[ "{name}" == "s2i-base-*" ]]; then
-              # Use same naming format for s2i-base as other images use
-              docker tag openshift/base-centos{release} centos/{name}-centos{release}
-            fi
             for remote in $(git remote | grep test_); do
               echo "Testing ${{remote#test_}}/master"
               git checkout $remote/master

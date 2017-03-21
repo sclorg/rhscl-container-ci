@@ -49,15 +49,6 @@
             # Run base image tests and tests of each dependent image
             make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true
 
-            # TODO
-            # Hack to be able to handle s2i-base image same as other images
-            if [[ "{name}" == "s2i-base-"* ]]; then
-              # Use same naming format as other images
-              docker tag openshift/base-centos{release} centos/s2i-base-centos{release}
-              # Remove resulted images - more disk space
-              docker rmi -f openshift/base-centos{release} || :
-            fi
-
             for remote in $(git remote | grep test_); do
               echo "Testing ${{remote#test_}}/master"
               git checkout $remote/master
