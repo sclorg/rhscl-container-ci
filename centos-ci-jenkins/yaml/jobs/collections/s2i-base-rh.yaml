@@ -3,7 +3,7 @@
     gitproject: s2i-base-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-s2i-base*'
+    blocks: 'rhscl-images-s2i-base-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

@@ -3,7 +3,7 @@
     gitproject: s2i-ruby-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-ruby*'
+    blocks: 'rhscl-images-ruby-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

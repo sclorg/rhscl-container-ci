@@ -3,7 +3,7 @@
     gitproject: devtoolset-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-devtoolset*'
+    blocks: 'rhscl-images-devtoolset-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

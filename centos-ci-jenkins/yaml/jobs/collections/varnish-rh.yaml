@@ -3,7 +3,7 @@
     gitproject: varnish-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-varnish*'
+    blocks: 'rhscl-images-varnish-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

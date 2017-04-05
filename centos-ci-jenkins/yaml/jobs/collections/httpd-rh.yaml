@@ -3,7 +3,7 @@
     gitproject: httpd-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-httpd*'
+    blocks: 'rhscl-images-httpd-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

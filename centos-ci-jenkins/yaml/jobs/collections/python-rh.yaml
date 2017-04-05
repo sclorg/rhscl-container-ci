@@ -3,7 +3,7 @@
     gitproject: s2i-python-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-python*'
+    blocks: 'rhscl-images-python-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

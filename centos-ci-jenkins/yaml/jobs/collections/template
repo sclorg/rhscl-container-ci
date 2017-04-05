@@ -3,7 +3,7 @@
     gitproject: %GITPROJECT%
     gituser: %GITUSER%
     release: 7
-    blocks: 'rhscl-images-%SCL%*'
+    blocks: 'rhscl-images-%SCL%-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'
