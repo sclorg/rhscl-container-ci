@@ -29,14 +29,14 @@
             #!/bin/bash
             set -ex
 
-            # Copy sources and prepare docker
-            scp -F ssh_config -rp $(pwd) host:sources
-            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh
+            # Prepare docker
+            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync
             ssh -F ssh_config host yum -y install source-to-image
             ssh -F ssh_config host service docker start
             # Enable sudo for ssh (required by test cases)
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
-            # Prepare sources (shared build scripts)
+            # Copy sources and prepare shared sources (build scripts)
+            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
             ssh -F ssh_config host 'set -ex; setenforce 0; cd sources; make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
