@@ -30,5 +30,6 @@
             for remote in $(git remote | grep test_); do
               echo "Testing ${{remote#test_}}/master"
               git checkout $remote/master
+              git submodule update --init
               make test SKIP_SQUASH=1 TARGET=rhel{release}
             done
