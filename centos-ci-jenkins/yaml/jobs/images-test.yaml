@@ -30,7 +30,7 @@
             set -ex
 
             # Prepare docker
-            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync
+            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man
             ssh -F ssh_config host yum -y install source-to-image
             ssh -F ssh_config host service docker start
             # Enable sudo for ssh (required by test cases)

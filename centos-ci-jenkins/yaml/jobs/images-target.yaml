@@ -31,7 +31,7 @@
             set -ex
 
             # Prepare docker
-            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync
+            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man
             ssh -F ssh_config host yum -y install source-to-image
             # Configure docker for OpenShift and flush IPtables before starting
             ssh -F ssh_config host 'sed -i -e "s|# INSECURE_REGISTRY.*|INSECURE_REGISTRY=\"--insecure-registry 172.30.0.0/16\"|" /etc/sysconfig/docker; iptables -F'
