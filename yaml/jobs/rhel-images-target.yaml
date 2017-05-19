@@ -32,5 +32,5 @@
               echo "Testing ${{remote#test_}}/master"
               git checkout $remote/master
               git submodule update --init
-              make {target} SKIP_SQUASH=1 TARGET=rhel{release}
+              make {target} TARGET=rhel{release}
             done
