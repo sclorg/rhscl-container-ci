@@ -25,7 +25,7 @@
           blocking-jobs:
             - "{blocks}"
           block-level: 'NODE'
-          queue-scanning: 'ALL'
+          queue-scanning: 'BUILDABLE'
     wrappers:
       - timestamps
 
