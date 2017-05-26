@@ -7,7 +7,7 @@
             #!/bin/bash
             set -ex
 
-            curl --silent https://raw.githubusercontent.com/sclorg/rhscl-container-ci/master/centos-ci-jenkins/configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
+            curl --silent https://raw.githubusercontent.com/sclorg/rhscl-container-ci/master/configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
 
               if [[ "${{trigger}}" == *{name}* ]]; then
                 echo "Adding and fetching test_${{scl}}-${{namespace}} remote"
