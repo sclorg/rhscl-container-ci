@@ -1,9 +1,9 @@
 - project:
-    name: s2i-base-rh
+    name: s2i-rh
     gitproject: s2i-base-container
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images-s2i-base-.*'
+    blocks: 'rhscl-images-s2i-.*'
     jobs:
         - 'SCLo-container-{name}':
             context: 'ci.centos.org'

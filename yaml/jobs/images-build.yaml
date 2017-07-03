@@ -35,10 +35,9 @@
 
             IMAGES=""
             for version in ${{VERSIONS:-^}}; do
-              # If no version specified, remove middle part of image name
               image="{name}"
-              image="${{image%-*}}-${{version/./}}-centos{release}"
-              IMAGES+="${{image/^-/}} "
+              # ${{image%-*}} deletes namespace from image name
+              IMAGES+="${{image%-*}}-${{version/./}}-centos{release} "
             done
 
             # Remove resulted images - more disk space + no 'docker tag' failure

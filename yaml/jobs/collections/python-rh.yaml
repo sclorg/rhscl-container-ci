@@ -11,5 +11,5 @@
         - 'rhscl-images-{name}':
             context: 'RHEL7'
         - 'rhscl-images-{name}-build':
-            project_trigger: rhscl-images-s2i-base-rh-build
+            project_trigger: rhscl-images-s2i-rh-build
             hub_namespace: centos
