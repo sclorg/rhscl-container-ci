@@ -1,0 +1,65 @@
+- project:
+    name: container-common-scripts-test
+    gitproject: container-common-scripts
+    gituser: sclorg
+    release: 7
+    blocks: 'rhscl-images.*'
+    jobs:
+        - 'SCLo-container-container-common-scripts-test':
+            context: 'CentOS7'
+            arch: x86_64
+        - 'rhscl-images-container-common-scripts-test':
+            context: 'RHEL7'
+
+- job-template:
+    name: 'rhscl-images-container-common-scripts-test'
+    node: slave_rhel7_root
+    scm:
+        - images-pull-test:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - github-pr:
+            context: '{context}'
+    builders:
+      - shell: |
+          #!/bin/bash
+          set -ex
+
+          make check
+
+
+- job-template:
+    name: 'SCLo-container-container-common-scripts-test'
+    node: sclo-sig
+    scm:
+        - images-pull-test:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - github-pr:
+            context: '{context}'
+    builders:
+        - shell: |
+            cico node get -f value --retry-count 5 --retry-interval 60 --arch {arch} --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
+            tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
+            tail -n 1 cico.out | cut -d ' ' -f 2 > host
+        - generate_ssh_config
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            # Prepare docker
+            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base
+            ssh -F ssh_config host yum -y install source-to-image
+            ssh -F ssh_config host service docker start
+            # Enable sudo for ssh (required by test cases)
+            ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
+            # Copy sources and prepare shared sources (build scripts)
+            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
+            ssh -F ssh_config host 'cd sources && git submodule update --init'
+            # Run make for base image and for each dependent image
+            ssh -F ssh_config host 'set -ex; cd sources; \
+              make check'
+    publishers:
+        - cico_done
