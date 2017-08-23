@@ -25,6 +25,7 @@
       - shell: |
           #!/bin/bash
           set -ex
+          . /usr/local/docker-squash/bin/activate
 
           make check
 
@@ -50,16 +51,18 @@
             set -ex
 
             # Prepare docker
-            ssh -F ssh_config host yum -y install docker perl git python-setuptools centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base
-            ssh -F ssh_config host yum -y install source-to-image
+            ssh -F ssh_config host yum -y install docker perl git centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base
+            ssh -F ssh_config host yum -y install source-to-image python27-python-virtualenv
             ssh -F ssh_config host service docker start
+            # Install docker-squash
+            ssh -F ssh_config host 'scl enable python27 -- virtualenv --python /usr/bin/python /usr/local/docker-squash && . /usr/local/docker-squash/bin/activate && pip install "docker-squash==1.0.5"'
             # Enable sudo for ssh (required by test cases)
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             # Copy sources and prepare shared sources (build scripts)
             rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
-            ssh -F ssh_config host 'set -ex; cd sources; \
-              make check'
+            ssh -F ssh_config host 'set -ex; . /usr/local/docker-squash/bin/activate; \
+              cd sources; make check'
     publishers:
         - cico_done

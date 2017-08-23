@@ -23,6 +23,7 @@
         - shell: |
             #!/bin/bash
             set -ex
+            . /usr/local/docker-squash/bin/activate
 
             # Prepare sources (shared build scripts)
             git submodule update --init
