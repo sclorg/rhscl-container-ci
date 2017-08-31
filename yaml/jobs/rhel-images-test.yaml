@@ -33,4 +33,6 @@
               git checkout $remote/master
               git submodule update --init
               make test TARGET=rhel{release}
+              # clean everything (if the 'clean' target is defined)
+              make clean || :
             done
