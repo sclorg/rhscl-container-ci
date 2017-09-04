@@ -24,7 +24,7 @@
         - shell: |
             #!/bin/bash
             set -ex
-            . /usr/local/docker-squash/bin/activate
+            #. /usr/local/docker-squash/bin/activate
 
             git submodule update --init
 
