@@ -38,7 +38,10 @@
             for version in ${{VERSIONS:-^}}; do
               image="{name}"
               # ${{image%-*}} deletes namespace from image name
-              IMAGES+="${{image%-*}}-${{version/./}}-centos{release} "
+              image_name="${{image%-*}}-${{version/./}}-centos{release}"
+              IMAGES+="${{image_name}} "
+              # prepare README.md for every image, ignore when missing
+              cp ${{version}}/README.md README-${{image_name}}.md || :
             done
 
             # Remove resulted images - more disk space + no 'docker tag' failure
@@ -56,10 +59,22 @@
               make test SKIP_SQUASH=1
             done
 
+            # Get the dhwebapi tool
+            scl enable rh-python35 -- virtualenv dhwebapi
+            source dhwebapi/bin/activate
+            scl enable rh-python35 -- pip3 install -e git://github.com/ficap/dhwebapi.git#egg=dhwebapi
+
             # Push to Docker Hub
             for image_name in $IMAGES; do
               docker tag centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}}
               HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/${{image_name}}
+              # Update Docker Hub full description from the README.md (prepared above for all versions)
+              if [ -f README-${{image_name}}.md ] ; then
+                scl enable rh-python35 -- dhwebapi update-repo-full-description \
+                                                   -f README-${{image_name}}.md \
+                                                   --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
+                                                   ${{HUB_NAMESPACE}} ${{image_name}}
+              fi
             done
     publishers:
         - email:
