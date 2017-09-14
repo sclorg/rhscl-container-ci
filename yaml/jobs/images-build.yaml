@@ -68,12 +68,26 @@
             for image_name in $IMAGES; do
               docker tag centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}}
               HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/${{image_name}}
+              description=$(docker inspect --format='{{{{.Config.Labels.summary}}}}' centos/${{image_name}} || :)
+              # Update Docker Hub summary from the summary label of the image
+              if [ -n "${{description}}" ] && [ "${{description}}" != "<no value>" ] ; then
+                if [ ${{#description}} -gt 100 ] ; then
+                  description="${{description:0:97}}..."
+                fi
+                echo "${{description}}" >description.${{image_name}}
+                scl enable rh-python35 -- \
+                  dhwebapi update-repo-description \
+                           -f description.${{image_name}} \
+                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
+                           ${{HUB_NAMESPACE}} ${{image_name}}
+              fi
               # Update Docker Hub full description from the README.md (prepared above for all versions)
               if [ -f README-${{image_name}}.md ] ; then
-                scl enable rh-python35 -- dhwebapi update-repo-full-description \
-                                                   -f README-${{image_name}}.md \
-                                                   --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
-                                                   ${{HUB_NAMESPACE}} ${{image_name}}
+                scl enable rh-python35 -- \
+                  dhwebapi update-repo-full-description \
+                           -f README-${{image_name}}.md \
+                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
+                           ${{HUB_NAMESPACE}} ${{image_name}}
               fi
             done
     publishers:
