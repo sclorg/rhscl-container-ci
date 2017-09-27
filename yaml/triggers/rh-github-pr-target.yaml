@@ -1,5 +1,5 @@
 - trigger:
-    name: github-pr-target
+    name: rh-github-pr-target
     triggers:
       - github-pull-request:
           admin-list:
@@ -10,7 +10,6 @@
             - sclorg
           allow-whitelist-orgs-as-admins: true
           cron: 'H/5 * * * *'
-          github-hooks: true
           build-desc-template: "Checks whether PR does not break anything"
           trigger-phrase: '{trigger-phrase}'
           only-trigger-phrase: true

@@ -14,7 +14,7 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr-target:
+        - rh-github-pr-target:
             context: 'RHEL{release} make {target}'
             trigger-phrase: '.*\[{target}\].*'
     builders:

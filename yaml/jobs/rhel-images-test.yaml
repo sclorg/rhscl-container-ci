@@ -14,7 +14,7 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr:
+        - rh-github-pr:
             context: '{context}'
     builders:
         - add_dependencies_remote:
