@@ -3,66 +3,45 @@
     gitproject: container-common-scripts
     gituser: sclorg
     release: 7
-    blocks: 'rhscl-images.*'
     jobs:
-        - 'SCLo-container-container-common-scripts-test':
-            context: 'CentOS7'
-            arch: x86_64
-        - 'rhscl-images-container-common-scripts-test':
-            context: 'RHEL7'
+        - '{job_prefix}-container-common-scripts-test':
+            OS: 'centos'
+            job_prefix: 'SCLo-container'
+            use_hooks: true
+            not_automatic: true
+            trigger_phrase: 'test'
+        - '{job_prefix}-container-common-scripts-test':
+            OS: 'rhel'
+            job_prefix: 'rhscl-images'
+            use_hooks: false
+            not_automatic: true
+            trigger_phrase: 'test'
 
 - job-template:
-    name: 'rhscl-images-container-common-scripts-test'
-    node: slave_rhel7_root
+    name: '{job_prefix}-container-common-scripts-test'
+    node: sclo-sig||slave_rhel7_root
     scm:
         - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
         - github-pr:
-            context: '{context}'
+            context: '{OS}{release}'
+            use_hooks: '{use_hooks}'
+            not_automatic: '{not_automatic}'
+            trigger_phrase: '{trigger_phrase}'
     builders:
-      - shell: |
-          #!/bin/bash
-          set -ex
-          #. /usr/local/docker-squash/bin/activate
-
-          make check
-
-
-- job-template:
-    name: 'SCLo-container-container-common-scripts-test'
-    node: sclo-sig
-    scm:
-        - images-pull-test:
-            gituser: '{gituser}'
-            gitproject: '{gitproject}'
-    triggers:
-        - github-pr:
-            context: '{context}'
-    builders:
-        - shell: |
-            cico node get -f value --retry-count 5 --retry-interval 60 --arch {arch} --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
-            tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
-            tail -n 1 cico.out | cut -d ' ' -f 2 > host
-        - generate_ssh_config
+        - prepare-{OS}:
+            release: '{release}'
         - shell: |
             #!/bin/bash
             set -ex
 
-            # Prepare docker
-            ssh -F ssh_config host yum -y install docker perl git centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base
-            ssh -F ssh_config host yum -y install source-to-image python27-python-virtualenv
-            ssh -F ssh_config host service docker start
-            # Install docker-squash
-            ssh -F ssh_config host 'scl enable python27 -- virtualenv --python /usr/bin/python /usr/local/docker-squash && . /usr/local/docker-squash/bin/activate && pip install "docker-squash==1.0.5"'
-            # Enable sudo for ssh (required by test cases)
-            ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
             # Copy sources and prepare shared sources (build scripts)
             rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
-            ssh -F ssh_config host 'set -ex; . /usr/local/docker-squash/bin/activate; \
+            ssh -F ssh_config host 'set -ex; \
               cd sources; make check'
     publishers:
-        - cico_done
+        - release-vm

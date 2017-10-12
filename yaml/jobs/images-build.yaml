@@ -1,12 +1,12 @@
-# Can be started only by new commit in repository, manually or by upstream job
-#
-# parameters:
-#   name: software collection name with namespace, e.g. httpd24-rh
-#   release: version of RHEL/CentOS to test, e.g. 6
-#   gituser: name of github user or organization
-#   gitproject: name of a repository to test
-#   project_trigger: projects which can trigger this job
-#   hub_namespace: image namespace where to push image in Docker Hub
+# Requires:
+# {name}
+# {gituser}
+# {gitproject}
+# {OS}
+# {release}
+# {trigger_phrase}
+# {project_trigger}
+# {hub_namespace}
 - job-template:
     name: 'rhscl-images-{name}-build'
     node: slave_rhel{release}_root
@@ -21,75 +21,28 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
+        - prepare-rhel:
+            release: '{release}'
         - shell: |
             #!/bin/bash
             set -ex
-            #. /usr/local/docker-squash/bin/activate
 
-            git submodule update --init
+            # Copy sources and prepare shared sources (build scripts)
+            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
+            ssh -F ssh_config host 'cd sources && git submodule update --init'
 
-            # Docker Hub namespace where to push
-            HUB_NAMESPACE={hub_namespace}
-
-            # In what namespace version have to be tagged
-            VERSIONS=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||")
-
-            IMAGES=""
-            for version in ${{VERSIONS:-^}}; do
-              image="{name}"
-              # ${{image%-*}} deletes namespace from image name
-              image_name="${{image%-*}}-${{version/./}}-centos{release}"
-              IMAGES+="${{image_name}} "
-              # prepare README.md for every image, ignore when missing
-              cp ${{version}}/README.md README-${{image_name}}.md || :
-            done
-
-            # Remove resulted images - more disk space + no 'docker tag' failure
-            for image_name in $IMAGES; do
-              docker rmi -f centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}} || :
-            done
-
-            # Run base image tests and tests of each dependent image
-            make test SKIP_SQUASH=1 UPDATE_BASE=1 TAG_ON_SUCCESS=true
-
-            for remote in $(git remote | grep test_); do
-              echo "Testing ${{remote#test_}}/master"
-              git checkout $remote/master
-              git submodule update --init
-              make test SKIP_SQUASH=1
-            done
-
-            # Get the dhwebapi tool
-            scl enable rh-python35 -- virtualenv dhwebapi
-            source dhwebapi/bin/activate
-            scl enable rh-python35 -- pip3 install -e git://github.com/ficap/dhwebapi.git#egg=dhwebapi
-
-            # Push to Docker Hub
-            for image_name in $IMAGES; do
-              docker tag centos/${{image_name}} docker.io/${{HUB_NAMESPACE}}/${{image_name}}
-              HOME=~/.docker_credentials/${{HUB_NAMESPACE}} docker push docker.io/${{HUB_NAMESPACE}}/${{image_name}}
-              description=$(docker inspect --format='{{{{.Config.Labels.summary}}}}' centos/${{image_name}} || :)
-              # Update Docker Hub summary from the summary label of the image
-              if [ -n "${{description}}" ] && [ "${{description}}" != "<no value>" ] ; then
-                if [ ${{#description}} -gt 100 ] ; then
-                  description="${{description:0:97}}..."
-                fi
-                echo "${{description}}" >description.${{image_name}}
-                scl enable rh-python35 -- \
-                  dhwebapi update-repo-description \
-                           -f description.${{image_name}} \
-                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
-                           ${{HUB_NAMESPACE}} ${{image_name}}
-              fi
-              # Update Docker Hub full description from the README.md (prepared above for all versions)
-              if [ -f README-${{image_name}}.md ] ; then
-                scl enable rh-python35 -- \
-                  dhwebapi update-repo-full-description \
-                           -f README-${{image_name}}.md \
-                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
-                           ${{HUB_NAMESPACE}} ${{image_name}}
-              fi
-            done
+        - image-tests:
+            OS: '{OS}'
+            release: '{release}'
+        - image-build-push:
+            OS: '{OS}'
+            release: '{release}'
+            hub_namespace: '{hub_namespace}'
+        - docker-hub-update:
+            OS: '{OS}'
+            release: '{release}'
+            hub_namespace: '{hub_namespace}'
     publishers:
+        - release-vm
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'

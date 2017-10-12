@@ -13,36 +13,12 @@
       changes, check out the <a href="https://github.com/sclorg/rhscl-container-ci/">rhscl-container-ci</a> repo.
     name: global
     project-type: freestyle
-    concurrent: false
+    concurrent: true
     logrotate:
       numToKeep: 25
-    block-downstream: true
-    block-upstream: true
     properties:
       - github:
           url: https://github.com/{gituser}/{gitproject}
-      - build-blocker:
-          blocking-jobs:
-            - "{blocks}"
-          block-level: 'NODE'
-          queue-scanning: 'BUILDABLE'
     wrappers:
       - timestamps
 
-- defaults:
-    description: |
-      This job is automatically updated by Jenkins Job Builder, any manual
-      change will be lost in the next update. If you want to make permanent
-      changes, check out the <a href="https://github.com/sclorg/rhscl-container-ci/">rhscl-container-ci</a> repo.
-    name: triggers
-    project-type: freestyle
-    concurrent: false
-    logrotate:
-      numToKeep: 10
-    block-downstream: true
-    block-upstream: true
-    properties:
-      - github:
-          url: 'https://github.com/sclorg/rhscl-container-ci'
-    wrappers:
-      - timestamps

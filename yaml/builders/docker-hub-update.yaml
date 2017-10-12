@@ -1,0 +1,49 @@
+# Requires:
+# {OS}
+# {release}
+# {hub_namespace}
+- builder:
+    name: 'docker-hub-update'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            # Get the dhwebapi tool
+            ssh -F ssh_config host << 'EOF'
+            scl enable rh-python35 -- virtualenv dhwebapi
+            source dhwebapi/bin/activate
+            scl enable rh-python35 -- pip3 install -e git://github.com/ficap/dhwebapi.git#egg=dhwebapi
+            EOF
+
+            # Update Docker Hub
+            rsync -avzP -e 'ssh -F ssh_config' ~/.docker_credentials/ host:~
+            ssh -F ssh_config host << 'EOF'
+            set -ex; setenforce 0;
+            source dhwebapi/bin/activate
+            cd sources
+            for version in $(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); do
+              for image in $(make tag TARGET={OS}{release} VERSIONS=${{version}} | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
+                echo "Updating summary for ${{image}}"
+                description=$(docker inspect --format='{{{{.Config.Labels.summary}}}}' ${{image}} || :)
+                if [ -n "${{description}}" ] && [ "${{description}}" != "<no value>" ] ; then
+                  if [ ${{#description}} -gt 100 ] ; then
+                    description="${{description:0:97}}..."
+                  fi
+                  scl enable rh-python35 -- \
+                    dhwebapi update-repo-description \
+                           -f <(echo "${{description}}") \
+                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
+                           {hub_namespace} ${{image}}
+                fi
+                echo "Update Docker Hub full description from the README.md"
+                if [ -f ${{version}}/README.md ] ; then
+                  scl enable rh-python35 --
+                    dhwebapi update-repo-full-description
+                           -f ${{version}}/README.md
+                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token
+                           {hub_namespace} ${{image}}
+                fi
+              done
+            done
+            EOF

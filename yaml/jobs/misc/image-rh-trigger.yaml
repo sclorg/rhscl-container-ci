@@ -1,11 +1,12 @@
 - project:
     name: centos_centos7-rh
+    gitproject: official-images
+    gituser: CentOS
     jobs:
         - 'rhscl-images-{name}-trigger'
 
 - job-template:
     name: 'rhscl-images-{name}-trigger'
-    defaults: 'triggers'
     node: rhel7_slave_1_root
     triggers:
       - script:

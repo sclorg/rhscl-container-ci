@@ -1,0 +1,26 @@
+# Requires:
+# {OS}
+# {release}
+# {hub_namespace}
+- builder:
+    name: 'image-build-push'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            # Push images
+            rsync -avzP -e 'ssh -F ssh_config' ~/.docker_credentials/ host:~
+            ssh -F ssh_config host 'set -ex; setenforce 0; \
+              cd sources; make tag TARGET={OS}{release} | tee output;'
+
+            ssh -F ssh_config host bash << 'EOF'
+            set -ex; setenforce 0; cd sources;
+            for image in $(cat output | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
+              echo "Pushing ${{image}}"
+              docker tag ${{image}} docker.io/${{image}}
+              HOME=~/.docker_credentials/{hub_namespace} docker push docker.io/${{image}}
+            done
+            rm output
+            EOF
+

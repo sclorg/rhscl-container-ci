@@ -1,0 +1,44 @@
+- builder:
+    name: 'prepare-centos'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            cico node get -f value --retry-count 5 --retry-interval 60 --arch x86_64 --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
+            tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
+            tail -n 1 cico.out | cut -d ' ' -f 2 > host
+            h=$(head -n 1 host)
+            rm cico.out
+
+            # Prepare ssh_config
+            cat > ssh_config << EOF
+            UserKnownHostsFile /dev/null
+            StrictHostKeyChecking no
+            User root
+            ConnectTimeout 10
+
+            Host host
+              Hostname ${{h}}.ci.centos.org
+            EOF
+
+            # Create script for cleanup
+            cat > .cleanup.sh << EOF
+            #!/bin/bash
+            set -ex
+
+            cico node done --api-key $(cat ~/duffy.key) $(cat ssid)
+            rm ssid ssh_config
+            EOF
+            chmod a+x .cleanup.sh
+
+            # Prepare docker
+            ssh -F ssh_config host yum -y install docker perl git centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base
+            ssh -F ssh_config host yum -y install source-to-image python27-python-virtualenv
+            ssh -F ssh_config host service docker start
+            # Install docker-squash
+            ssh -F ssh_config host 'scl enable python27 -- virtualenv --python /usr/bin/python /usr/local/docker-squash && . /usr/local/docker-squash/bin/activate && \
+              pip install "docker-squash==1.0.5" && echo ". /usr/local/docker-squash/bin/activate" > ~/.bashrc'
+            # Enable sudo for ssh (required by test cases)
+            ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
+

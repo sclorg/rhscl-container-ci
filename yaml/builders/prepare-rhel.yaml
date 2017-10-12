@@ -1,0 +1,30 @@
+- builder:
+    name: 'prepare-rhel'
+    builders:
+        - shell: |
+            #!/bin/bash
+            set -ex
+
+            resalloc --connection http://172.16.39.21:49100/ ticket --tag rhel{release} > ticket
+            host=$(resalloc --connection http://172.16.39.21:49100/ ticket-wait $(cat ticket))
+
+            cat > ssh_config << EOF
+            UserKnownHostsFile /dev/null
+            StrictHostKeyChecking no
+            User root
+            ConnectTimeout 10
+
+            Host host
+              Hostname ${{host}}
+              IdentityFile ~/.ssh/id_rsa_resalloc
+            EOF
+
+            # Create script for cleanup
+            cat > .cleanup.sh << EOF
+            #!/bin/bash
+            set -ex
+
+            resalloc --connection http://172.16.39.21:49100/ ticket-close $(cat ticket)
+            rm ticket ssh_config
+            EOF
+            chmod a+x .cleanup.sh

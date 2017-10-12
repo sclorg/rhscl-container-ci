@@ -1,0 +1,7 @@
+- publisher:
+    name: 'release-vm'
+    publishers:
+    - postbuildscript:
+        script-only-if-succeeded: false
+        generic-script: 
+          - './.cleanup.sh'

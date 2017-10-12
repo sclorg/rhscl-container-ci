@@ -10,7 +10,8 @@
             - sclorg
           allow-whitelist-orgs-as-admins: true
           cron: 'H/5 * * * *'
-          github-hooks: true
+          github-hooks: '{use_hooks}'
           build-desc-template: "Checks whether PR does not break anything"
-          trigger-phrase: '.*\[test\].*'
+          trigger-phrase: '.*\[{trigger_phrase}\].*'
+          only-trigger-phrase: '{not_automatic}'
           status-context: '{context}'
