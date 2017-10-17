@@ -23,20 +23,20 @@ if ! pip show jenkins-job-builder >/dev/null 2>&1; then
 fi
 
 # Generate a JJB config files
-if [ ! -f $THISDIR/jenkins_jobs.ini ]; then
-  cp $THISDIR/jenkins_jobs.ini.template $THISDIR/jenkins_jobs.ini
-  echo "jenkins_jobs.ini generated, please edit and add username/password to update ci.centos.org"
-  exit 1
-fi
-if [ ! -f $THISDIR/jenkins_jobs_rhscl.ini ]; then
-  cp $THISDIR/jenkins_jobs.ini.template $THISDIR/jenkins_jobs_rhscl.ini
-  echo "jenkins_jobs_rhscl.ini generated, please edit jenkins URL and add username/password to authenticate"
+if [ ! -f $THISDIR/jenkins_jobs.ini ] || [ ! -f $THISDIR/jenkins_jobs_rhscl.ini ]; then
+  if [ ! -f $THISDIR/jenkins_jobs.ini ]; then
+    cp $THISDIR/jenkins_jobs.ini.template $THISDIR/jenkins_jobs.ini
+    echo "jenkins_jobs.ini generated, please edit and add username/password to update ci.centos.org"
+  fi
+  if [ ! -f $THISDIR/jenkins_jobs_rhscl.ini ]; then
+    cp $THISDIR/jenkins_jobs.ini.template $THISDIR/jenkins_jobs_rhscl.ini
+    echo "jenkins_jobs_rhscl.ini generated, please edit jenkins URL and add username/password to authenticate"
+  fi
   exit 1
 fi
 
 # Generate jobs from collection list
-OVERRIDE_OS_MAJOR_VERSION=7
-cat configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
+cat $THISDIR/configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
   yaml=$THISDIR/yaml/jobs/collections/${scl}-${namespace}.yaml
   [ -f $yaml ] || \
     sed "s/%SCL%/${scl}/g; s/%NAMESPACE%/${namespace}/g; s|%GITUSER%|${gituser}|g; s|%GITPROJECT%|${gitproject}|g; s|%TRIGGER%|${trigger}|g; s|%HUB_NAMESPACE%|$hub_namespace|g;" \

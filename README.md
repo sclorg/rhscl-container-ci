@@ -13,15 +13,15 @@ Now tests are run in two Jenkins instances:
 
   - jobs to test Pull Requests (test CentOS based variants of images)
 
+  - JJB configuration file `jenkins_jobs.ini`
+
 * Non-public Jenkins server (to know more ask mskalick@redhat.com)
   - jobs to test Pull Requests (test RHEL based variants of images)
 
   - jobs to build CentOS based variants of images on every new commit and
   push them to [Docker Hub](https://hub.docker.com/u/centos/)
 
-Note: These two Jenkins instances differ in way how they run tests/commands.
-So some configuration files in this repository are specific to only one of
-CentOS/RHEL testing.
+  - JJB configuration file `jenkins_jobs_rhscl.ini`
 
 ## Pre-requisites
 
@@ -32,27 +32,16 @@ To use scripts in this repository to update jobs in Jenkins you need:
 JJB will be installed into a virtual environment under this directory, so is
 safe to run on any system.
 
-## Testing job modifications
-
-    ./run.sh test -o /tmp/jobs
-
-If the script exited without any errors the XML definitions of the jobs
-will be available in `/tmp/jobs`.
-
 ## Updating all jobs
 
 The provided script can update the Jenkins jobs over the API by running JJB.
 
     ./run.sh update
 
-If you haven't run it before, it will fail with an authentication error:
-
-	jenkins.JenkinsException: Error in request. Possibly authentication failed
-	[401]: Invalid password/token for user
-
-Edit the newly created `jenkins_jobs.ini` and `jenkins_jobs_rhscl.ini` files.
-Add the username/password for access to Jenkins, edit URL in
-`jenkins_jobs_rhscl.ini` and then re-run the command.
+To access Jenkins using JJB you have to provide configuration file. So if
+files `jenkins_jobs.ini` and `jenkins_jobs_rhscl.ini` don't exist they are
+created from a template. Then add the username/password for access to Jenkins, edit
+URL in `jenkins_jobs_rhscl.ini` and then re-run the command.
 
 Note: [SCLo-sig](https://wiki.centos.org/SpecialInterestGroup/SCLo)
 credentials for [ci.centos.org](ci.centos.org) can be found in the home

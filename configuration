@@ -1,10 +1,10 @@
-mariadb		rh	sclorg	mariadb-container	rhscl-images-centos_centos7-rh-trigger		centos
+mariadb		rh	sclorg	mariadb-container	rhscl-images-s2i-rh-build			centos
 postgresql	rh	sclorg	postgresql-container	rhscl-images-centos_centos7-rh-trigger		centos
-mongodb		rh	sclorg	mongodb-container	rhscl-images-centos_centos7-rh-trigger		centos
+mongodb		rh	sclorg	mongodb-container	rhscl-images-s2i-rh-build			centos
 mysql		rh	sclorg	mysql-container		rhscl-images-centos_centos7-rh-trigger		centos
 ror		rh	sclorg	ror-container		rhscl-images-centos_centos7-rh-trigger		centos
 devtoolset	rh	sclorg	devtoolset-container	rhscl-images-centos_centos7-rh-trigger		centos
-thermostat	rh	sclorg	thermostat-container	rhscl-images-centos_centos7-rh-trigger		centos
+thermostat	rh	sclorg	thermostat-container	rhscl-images-s2i-rh-build			centos
 redis		rh	sclorg	redis-container		rhscl-images-centos_centos7-rh-trigger		centos
 s2i     	rh	sclorg	s2i-base-container	rhscl-images-centos_centos7-rh-trigger		centos
 httpd		rh	sclorg	httpd-container		rhscl-images-s2i-rh-build			centos
