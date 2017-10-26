@@ -16,5 +16,6 @@
                 git checkout $remote/master; \
                 git submodule update --init; \
                 make test TARGET={OS}{release}; \
-              done'
+              done; \
+              git checkout -f origin/master;'
 

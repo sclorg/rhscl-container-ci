@@ -31,6 +31,6 @@
             trigger_phrase: 'test'
         - 'rhscl-images-{name}-build':
             OS: 'centos'
-            project_trigger: 'rhscl-images-centos_centos7-rh-trigger'
+            project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'centos'
 

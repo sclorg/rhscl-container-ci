@@ -17,32 +17,33 @@
             EOF
 
             # Update Docker Hub
-            rsync -avzP -e 'ssh -F ssh_config' ~/.docker_credentials/ host:~
             ssh -F ssh_config host << 'EOF'
             set -ex; setenforce 0;
             source dhwebapi/bin/activate
             cd sources
             for version in $(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); do
-              for image in $(make tag TARGET={OS}{release} VERSIONS=${{version}} | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
+              for image in $(make tag TARGET={OS}{release} VERSIONS=${{version}} | grep -- '-> Tagging image' | cut -d' ' -f 6 | sed "s/'//g"); do
                 echo "Updating summary for ${{image}}"
                 description=$(docker inspect --format='{{{{.Config.Labels.summary}}}}' ${{image}} || :)
+
+                name=${{image##*/}}
                 if [ -n "${{description}}" ] && [ "${{description}}" != "<no value>" ] ; then
                   if [ ${{#description}} -gt 100 ] ; then
-                    description="${{description:0:97}}..."
+                    description="${{description:0:96}}..."
                   fi
                   scl enable rh-python35 -- \
                     dhwebapi update-repo-description \
                            -f <(echo "${{description}}") \
-                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token \
-                           {hub_namespace} ${{image}}
+                           --tokenfile /root/.docker_credentials/{hub_namespace}/hub-webapi-token \
+                           {hub_namespace} ${{name%:*}}
                 fi
                 echo "Update Docker Hub full description from the README.md"
                 if [ -f ${{version}}/README.md ] ; then
-                  scl enable rh-python35 --
-                    dhwebapi update-repo-full-description
-                           -f ${{version}}/README.md
-                           --tokenfile /root/.docker_credentials/centos/hub-webapi-token
-                           {hub_namespace} ${{image}}
+                  scl enable rh-python35 -- \
+                    dhwebapi update-repo-full-description \
+                           -f ${{version}}/README.md \
+                           --tokenfile /root/.docker_credentials/{hub_namespace}/hub-webapi-token \
+                           {hub_namespace} ${{name%:*}}
                 fi
               done
             done

@@ -10,7 +10,6 @@
             set -ex
 
             # Push images
-            rsync -avzP -e 'ssh -F ssh_config' ~/.docker_credentials/ host:~
             ssh -F ssh_config host 'set -ex; setenforce 0; \
               cd sources; make tag TARGET={OS}{release} | tee output;'
 
