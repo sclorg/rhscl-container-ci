@@ -9,13 +9,14 @@
             set -ex
 
             # Run make for base image and for each dependent image
-            timeout 4h ssh -F ssh_config host 'set -ex; setenforce 0; \
+            timeout 2h ssh -F ssh_config host 'set -ex; setenforce 0; \
               cd sources; make test TARGET={OS}{release} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
               for remote in $(git remote | grep test_); do \
-                echo "Testing ${{remote#test_}}/master"; \
                 git checkout $remote/master; \
                 git submodule update --init; \
-                make test TARGET={OS}{release}; \
+                versions=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); \
+                echo "Testing ${{remote#test_}}/master - version ${{versions##* }}"; \
+                make test TARGET={OS}{release} VERSIONS=${{versions##* }}; \
               done; \
               git checkout -f origin/master;'
 
