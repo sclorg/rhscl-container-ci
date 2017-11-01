@@ -44,5 +44,6 @@
             hub_namespace: '{hub_namespace}'
     publishers:
         - release-vm
+        - github-notifier
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'
