@@ -7,14 +7,10 @@
 # {project_trigger}
 # {hub_namespace}
 - job-template:
-    name: 'rhscl-images-{name}-build'
+    name: '{job_prefix}-{name}-build'
     node: slave_rhel7_root
     wrappers:
-      - timestamps
-      - credentials-binding:
-          - text:
-              variable: "GITHUB_TOKEN"
-              credential-id: 'f12f925d-cbc0-47fd-ab22-47f8d63ed6c0'
+      - wrappers-{job_prefix}
     scm:
         - images-build:
             gituser: '{gituser}'
@@ -26,7 +22,7 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
-        - prepare-rhscl-images
+        - prepare-{job_prefix}
         - shell: |
             #!/bin/bash
             set -ex
@@ -45,6 +41,8 @@
             hub_namespace: '{hub_namespace}'
     publishers:
         - release-vm
-        - github-notifier
+        - upload-log-{job_prefix}:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'

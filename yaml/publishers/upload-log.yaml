@@ -1,0 +1,57 @@
+# Requires:
+# {gituser}
+# {gitproject}
+- publisher:
+    name: 'upload-log-rhscl-images'
+    publishers:
+    - postbuildscript:
+        script-only-if-succeeded: false
+        builders:
+        - shell: |
+            #!/bin/bash
+            set -e
+
+            BUILD_LOG=$(curl -s -u "$JENKINS_CREDENTIALS" -k "$BUILD_URL/consoleText")
+            GIT_COMMIT=$(git rev-parse HEAD)
+            GITHUB_USERNAME="rhscl-bot"
+            COMMIT_JSON=$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/{gituser}/{gitproject}/commits/"$GIT_COMMIT")
+            COMMIT_URL=$(echo $COMMIT_JSON | python -c "import sys, json; api_res=json.load(sys.stdin); print api_res['html_url'];")
+
+            envsubst > upload.py <<EOF
+            #!/usr/bin/python
+            # -*- coding: utf-8 -*-
+            # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
+            import json, requests, base64
+
+            gist = {{"description": "$COMMIT_URL",
+                    "public": False,
+                    "files": {{
+                       '{gitproject}' + '-#' + '$BUILD_NUMBER.sh' : {{
+                         "content": r"""$BUILD_LOG""" }} }} }}
+
+            req = requests.post("https://api.github.com/gists", data=json.dumps(gist),
+                              auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
+
+            api_res=json.loads(req.content)
+            # Save Gist URL to a file which will be read by evironment variable injector
+            with open('build_log_url.prop', 'w') as f:
+              f.write("BUILD_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
+            EOF
+            python upload.py
+
+        - inject:
+            properties-file: 'build_log_url.prop'
+
+
+
+- publisher:
+    name: 'upload-log-SCLo-container'
+    publishers:
+    - postbuildscript:
+        script-only-if-succeeded: false
+        builders:
+        - shell: |
+            #!/bin/bash
+            set -e
+
+            # Do NOTHING!

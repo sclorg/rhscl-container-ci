@@ -1,0 +1,76 @@
+# Requires:
+# {gituser}
+# {gitproject}
+- publisher:
+    name: 'upload-diff'
+    publishers:
+    - postbuildscript:
+        script-only-if-succeeded: false
+        builders:
+        - shell: |
+            #!/bin/bash
+            set -e
+
+            # Generate sources, commit changes into generated branch and show diff
+            DIFF=$(ssh -F ssh_config host 'set -e; \
+              cd sources; \
+              if git branch | grep -q generated; then \
+                git diff origin/generated..generated; \
+              fi;')
+
+            # Generate diff only once and only if something differs
+            if [[ '{trigger_phrase}' != 'test' ]] || [[ -z "${{DIFF:-}}" ]] || [[ -z "${{GITHUB_TOKEN:-}}" ]]; then
+              exit 0;
+            fi
+
+            GIT_COMMIT=$(git rev-parse HEAD)
+            GITHUB_USERNAME="rhscl-bot"
+            COMMIT_JSON=$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/{gituser}/{gitproject}/commits/"$GIT_COMMIT")
+            COMMIT_URL=$(echo $COMMIT_JSON | python -c "import sys, json; api_res=json.load(sys.stdin); print api_res['html_url'];")
+
+            envsubst > upload.py <<EOF
+            #!/usr/bin/python
+            # -*- coding: utf-8 -*-
+            # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
+            import json, requests, base64
+
+            gist = {{"description": "$COMMIT_URL",
+                    "public": False,
+                    "files": {{
+                       '{gitproject}' + '-#' + '$BUILD_NUMBER.diff' : {{
+                         "content": r"""$DIFF""" }} }} }}
+
+            req = requests.post("https://api.github.com/gists", data=json.dumps(gist),
+                              auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
+
+            api_res=json.loads(req.content)
+            # Save Gist URL to a file which will be read by evironment variable injector
+            with open('diff_url.prop', 'w') as f:
+              f.write("DIFF_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
+            EOF
+            python upload.py
+
+            . diff_url.prop
+            envsubst > set-status.py <<EOF
+            #!/usr/bin/python
+            # -*- coding: utf-8 -*-
+            # Set status and url to github commit
+            import json, requests, base64
+
+            status = {{
+              "state": "success",
+              "target_url": "$DIFF_GIST_URL",
+              "description": "Generated diff.",
+              "context": "diff"
+            }}
+
+            req = requests.post("https://api.github.com/repos/{gituser}/{gitproject}/statuses/$GIT_COMMIT",
+                              data=json.dumps(status), auth=("$GITHUB_USERNAME","$GITHUB_TOKEN"))
+
+            api_res=json.loads(req.content)
+            print(api_res)
+            EOF
+            python set-status.py
+
+            rm upload.py set-status.py
+

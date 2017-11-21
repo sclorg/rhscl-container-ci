@@ -1,5 +1,6 @@
+# For internal infrastructure (URL must be hidden)
 - trigger:
-    name: github-pr
+    name: github-pr-rhscl-images
     triggers:
       - github-pull-request:
           admin-list:
@@ -11,7 +12,27 @@
           allow-whitelist-orgs-as-admins: true
           white-list-target-branches: ['master']
           cron: 'H/5 * * * *'
-          github-hooks: '{use_hooks}'
+          build-desc-template: "Checks whether PR does not break anything"
+          trigger-phrase: '.*\[{trigger_phrase}\].*'
+          only-trigger-phrase: '{not_automatic}'
+          status-context: '{context}'
+          status-url: '$BUILD_GIST_URL'
+
+# For centos CI
+- trigger:
+    name: github-pr-SCLo-container
+    triggers:
+      - github-pull-request:
+          admin-list:
+            - hhorak
+          white-list:
+            - hhorak
+          org-list:
+            - sclorg
+          allow-whitelist-orgs-as-admins: true
+          white-list-target-branches: ['master']
+          cron: 'H/5 * * * *'
+          github-hooks: 'true'
           build-desc-template: "Checks whether PR does not break anything"
           trigger-phrase: '.*\[{trigger_phrase}\].*'
           only-trigger-phrase: '{not_automatic}'

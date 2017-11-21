@@ -4,20 +4,20 @@
 # {gitproject}
 # {job_prefix}
 # {targetOS}
-# {use_hooks}
 # {not_automatic}
 # {trigger_phrase}
 - job-template:
     name: '{job_prefix}-{name}'
     node: sclo-sig||slave_rhel7_root
+    wrappers:
+      - wrappers-{job_prefix}
     scm:
         - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr:
+        - github-pr-{job_prefix}:
             context: '{context}'
-            use_hooks: '{use_hooks}'
             not_automatic: '{not_automatic}'
             trigger_phrase: '{trigger_phrase}'
     builders:
@@ -35,4 +35,11 @@
         - image-{trigger_phrase}:
             targetOS: '{targetOS}'
     publishers:
+        - upload-diff:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+            trigger_phrase: '{trigger_phrase}'
         - release-vm
+        - upload-log-{job_prefix}:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'

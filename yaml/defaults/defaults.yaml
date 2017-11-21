@@ -22,3 +22,23 @@
     wrappers:
       - timestamps
 
+
+
+# Credentials are only in internal infrastructure
+- wrapper:
+    name: 'wrappers-rhscl-images'
+    wrappers:
+      - timestamps
+      - credentials-binding:
+          - text:
+              variable: "GITHUB_TOKEN"
+              credential-id: 'af141230-0e73-4daa-a28f-152a7a4dc103'
+      - credentials-binding:
+          - username-password:
+              variable: "JENKINS_CREDENTIALS"
+              credential-id: 'edc7fb0b-e2c4-40c3-9f82-46316bdb48f3'
+
+- wrapper:
+    name: 'wrappers-SCLo-container'
+    wrappers:
+      - timestamps

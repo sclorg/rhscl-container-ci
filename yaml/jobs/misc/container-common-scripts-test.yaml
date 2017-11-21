@@ -7,13 +7,11 @@
         - '{job_prefix}-container-common-scripts-test':
             job_prefix: 'SCLo-container'
             targetOS: 'centos7'
-            use_hooks: true
             not_automatic: true
             trigger_phrase: 'test'
         - '{job_prefix}-container-common-scripts-test':
             job_prefix: 'rhscl-images'
             targetOS: 'rhel7'
-            use_hooks: false
             not_automatic: true
             trigger_phrase: 'test'
 
@@ -25,9 +23,8 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr:
+        - github-pr-{job_prefix}:
             context: '{targetOS}'
-            use_hooks: '{use_hooks}'
             not_automatic: '{not_automatic}'
             trigger_phrase: '{trigger_phrase}'
     builders:
@@ -44,3 +41,6 @@
               cd sources; make check'
     publishers:
         - release-vm
+        - upload-log-{job_prefix}:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'

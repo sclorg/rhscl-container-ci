@@ -5,7 +5,6 @@
 #   job_prefix: container jobs: in ci.centos.org have to be prefixed with SCLo-container
 #   (defines also used OS)    | in internal Jenkins have prefix rhscl-images
 #   targetOS: value of TARGET variable for make (see https://github.com/sclorg/container-common-scripts)
-#   use_hooks: true if use github triggers to start run, otherwise false
 #   not_automatic: false if run should start automatically for sclorg/ org members
 #   trigger_phrase: what phase can trigger this job - '.*\[{trigger_phrase}\].*'
 #   project_trigger: what project triggers new run
@@ -19,17 +18,16 @@
             job_prefix: 'SCLo-container'
             targetOS: 'centos7'
             context: 'centos7'
-            use_hooks: true
             not_automatic: false
             trigger_phrase: 'test'
         - '{job_prefix}-{name}':
             job_prefix: 'rhscl-images'
             targetOS: 'rhel7'
             context: 'rhel7'
-            use_hooks: false
             not_automatic: false
             trigger_phrase: 'test'
-        - 'rhscl-images-{name}-build':
+        - '{job_prefix}-{name}-build':
+            job_prefix: 'rhscl-images'
             project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'centos'
         - '{job_prefix}-{name}':
@@ -37,7 +35,6 @@
             name: 'mariadb-rh-openshift'
             targetOS: 'centos7'
             context: 'centos7 - openshift'
-            use_hooks: true
             not_automatic: true
             trigger_phrase: 'test-openshift'
         - '{job_prefix}-{name}':
@@ -45,7 +42,6 @@
             name: 'mariadb-rh-openshift'
             targetOS: 'rhel7'
             context: 'rhel7 - openshift'
-            use_hooks: false
             not_automatic: true
             trigger_phrase: 'test-openshift'
         - '{job_prefix}-{name}':
@@ -53,6 +49,5 @@
             name: 'mariadb-rh-fedora'
             targetOS: 'fedora'
             context: 'fedora'
-            use_hooks: true
             not_automatic: false
             trigger_phrase: 'test'
