@@ -2,7 +2,7 @@
 # {OS}
 # {release}
 - builder:
-    name: 'image-tests'
+    name: 'image-test'
     builders:
         - shell: |
             #!/bin/bash

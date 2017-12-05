@@ -17,7 +17,7 @@
             gitproject: '{gitproject}'
     triggers:
         - github-pr:
-            context: '{OS}{release}'
+            context: '{context}'
             use_hooks: '{use_hooks}'
             not_automatic: '{not_automatic}'
             trigger_phrase: '{trigger_phrase}'
@@ -34,7 +34,7 @@
             rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
-        - image-tests:
+        - image-{trigger_phrase}:
             OS: '{OS}'
             release: '{release}'
     publishers:

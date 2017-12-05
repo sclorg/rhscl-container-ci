@@ -31,7 +31,7 @@
             rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
-        - image-tests:
+        - image-test:
             OS: '{OS}'
             release: '{release}'
         - image-build-push:

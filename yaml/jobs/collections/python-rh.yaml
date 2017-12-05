@@ -20,12 +20,14 @@
         - '{job_prefix}-{name}':
             OS: 'centos'
             job_prefix: 'SCLo-container'
+            context: 'centos7'
             use_hooks: true
             not_automatic: false
             trigger_phrase: 'test'
         - '{job_prefix}-{name}':
             OS: 'rhel'
             job_prefix: 'rhscl-images'
+            context: 'rhel7'
             use_hooks: false
             not_automatic: false
             trigger_phrase: 'test'
@@ -33,4 +35,20 @@
             OS: 'centos'
             project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'centos'
+        - '{job_prefix}-{name}':
+            OS: 'centos'
+            job_prefix: 'SCLo-container'
+            name: 'python-rh-openshift'
+            context: 'centos7 - openshift'
+            use_hooks: true
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
+        - '{job_prefix}-{name}':
+            OS: 'rhel'
+            job_prefix: 'rhscl-images'
+            name: 'python-rh-openshift'
+            context: 'rhel7 - openshift'
+            use_hooks: false
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
 
