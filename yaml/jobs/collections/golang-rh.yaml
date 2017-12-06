@@ -1,0 +1,54 @@
+# What can be configured:#
+#   name: software collection name with namespace, e.g. httpd24-rh
+#   gituser: name of github user or organization
+#   gitproject: name of a repository to test
+#   job_prefix: container jobs in ci.centos.org have to be prefixed with SCLo-container
+#                              in internal Jenkins have prefix rhscl-images
+#   OS: what OS to use, rhel or centos
+#   release: version of RHEL/CentOS to test, e.g. 6
+#   use_hooks: true if use github triggers to start run, otherwise false
+#   not_automatic: false if run should start automatically for sclorg/ org members
+#   trigger_phrase: what phase can trigger this job - '.*\[{trigger_phrase}\].*'
+#   project_trigger: what project triggers new run
+#   hub_namespace: namespace where to put new image in Docker Hub
+- project:
+    name: golang-rh
+    gitproject: golang-container
+    gituser: sclorg
+    release: 7
+    jobs:
+        - '{job_prefix}-{name}':
+            OS: 'centos'
+            job_prefix: 'SCLo-container'
+            context: 'centos7'
+            use_hooks: true
+            not_automatic: false
+            trigger_phrase: 'test'
+        - '{job_prefix}-{name}':
+            OS: 'rhel'
+            job_prefix: 'rhscl-images'
+            context: 'rhel7'
+            use_hooks: false
+            not_automatic: false
+            trigger_phrase: 'test'
+        - 'rhscl-images-{name}-build':
+            OS: 'centos'
+            project_trigger: 'rhscl-images-s2i-rh-build'
+            hub_namespace: 'centos'
+        - '{job_prefix}-{name}':
+            OS: 'centos'
+            job_prefix: 'SCLo-container'
+            name: 'golang-rh-openshift'
+            context: 'centos7 - openshift'
+            use_hooks: true
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
+        - '{job_prefix}-{name}':
+            OS: 'rhel'
+            job_prefix: 'rhscl-images'
+            name: 'golang-rh-openshift'
+            context: 'rhel7 - openshift'
+            use_hooks: false
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
+

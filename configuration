@@ -6,7 +6,7 @@ ror		rh	sclorg	ror-container		rhscl-images-centos_centos7-rh-trigger		centos
 devtoolset	rh	sclorg	devtoolset-container	rhscl-images-centos_centos7-rh-trigger		centos
 thermostat	rh	sclorg	thermostat-container	rhscl-images-s2i-rh-build			centos
 redis		rh	sclorg	redis-container		rhscl-images-centos_centos7-rh-trigger		centos
-s2i     	rh	sclorg	s2i-base-container	rhscl-images-centos_centos7-rh-trigger		centos
+s2i		rh	sclorg	s2i-base-container	rhscl-images-centos_centos7-rh-trigger		centos
 httpd		rh	sclorg	httpd-container		rhscl-images-s2i-rh-build			centos
 nginx		rh	sclorg	nginx-container		rhscl-images-s2i-rh-build			centos
 passenger	rh	sclorg	passenger-container	rhscl-images-s2i-rh-build			centos
@@ -16,3 +16,5 @@ python		rh	sclorg	s2i-python-container	rhscl-images-s2i-rh-build			centos
 perl		rh	sclorg	s2i-perl-container	rhscl-images-s2i-rh-build			centos
 nodejs		rh	sclorg	s2i-nodejs-container	rhscl-images-s2i-rh-build			centos
 ruby		rh	sclorg	s2i-ruby-container	rhscl-images-s2i-rh-build			centos
+golang		rh	sclorg	golang-container	rhscl-images-s2i-rh-build			centos
+llvm		rh	sclorg	llvm-container		rhscl-images-s2i-rh-build			centos
