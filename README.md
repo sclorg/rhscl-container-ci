@@ -94,14 +94,23 @@ regenerating all project files.**
 
 ## How to add tests for a new image
 
-When a new image is created and we want to add testing of it, the easiest way
-is to add a new entry to `./configuration` file and run `./run.sh` (missing
-project files are generated):
+When a new image is created and we want to add testing of it. Push/move image repository into `https://github.com/sclorg` organization. To enable CI:
 
-    ./run.sh test
+1. Create jenkins job - the easiest way is to add a new entry to `./configuration` 
+file and run `./run.sh` (missing project files are generated):
 
-Then a PR should include `./configuration` and the newly created file
-`./yaml/jobs/collections/<newspec>`.
+    `./run.sh update`
 
-In order to allow testing of the pull-requests, make sure the 'centos-ci' and
-'rhscl-bot' github users  has permissions to write to the new repository.
+    Then a PR should include `./configuration` and the newly created file
+    `./yaml/jobs/collections/<newspec>`.
+
+2. In order to allow testing of the pull-requests, right permissions have be set. Add the **'centos-ci'** user as a collaborator to the repo and add the repository to **'Container images'** github team - both with **write** access.
+
+3. To be able to trigger CentOS CI jobs add webhook for github repository:
+
+    Payload URL : `https://ci.centos.org/ghprbhook/`
+
+    Choose `'Let me select individual events.'` and mark notifications for
+    `'Issue comment'` and `'Pull request'`.
+
+4. If the repository is supposed to be maintaned (write/admin permissions) only by people from RedHat, add the repository to **'RedHat maintained'** github team. There is a jenkins job which check permissions for all repositories listed there.
