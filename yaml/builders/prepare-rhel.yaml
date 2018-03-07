@@ -28,3 +28,7 @@
             rm ticket ssh_config
             EOF
             chmod a+x .cleanup.sh
+
+            # Prepare distgen (TEMPORARY FIX - https://gitlab.cee.redhat.com/platform-eng-core-services/coreservices-jenkins-slaves/merge_requests/16)
+            ssh -F ssh_config host yum -y install epel-release
+            ssh -F ssh_config host yum -y install distgen
