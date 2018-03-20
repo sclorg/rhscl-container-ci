@@ -10,11 +10,11 @@
             set -ex
 
             # Push images
-            ssh -F ssh_config host 'set -ex; setenforce 0; \
+            ssh -F ssh_config host 'set -ex; \
               cd sources; make tag TARGET={OS}{release} | tee output;'
 
             ssh -F ssh_config host bash << 'EOF'
-            set -ex; setenforce 0; cd sources;
+            set -ex; cd sources;
             for image in $(cat output | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
               echo "Pushing ${{image}}"
               docker tag ${{image}} docker.io/${{image}}

@@ -18,7 +18,7 @@
 
             # Update Docker Hub
             ssh -F ssh_config host << 'EOF'
-            set -ex; setenforce 0;
+            set -ex;
             source dhwebapi/bin/activate
             cd sources
             for version in $(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); do

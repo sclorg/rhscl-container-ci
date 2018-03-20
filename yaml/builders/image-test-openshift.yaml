@@ -9,6 +9,6 @@
             set -ex
 
             # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host 'set -ex; setenforce 0; \
+            timeout 2h ssh -F ssh_config host 'set -ex; \
               cd sources; make test-openshift TARGET={OS}{release} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
 
