@@ -9,6 +9,7 @@
           org-list:
             - sclorg
           allow-whitelist-orgs-as-admins: true
+          white-list-target-branches: ['master']
           cron: 'H/5 * * * *'
           github-hooks: '{use_hooks}'
           build-desc-template: "Checks whether PR does not break anything"
