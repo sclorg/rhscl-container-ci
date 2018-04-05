@@ -32,3 +32,8 @@
             # Prepare distgen (TEMPORARY FIX - https://gitlab.cee.redhat.com/platform-eng-core-services/coreservices-jenkins-slaves/merge_requests/16)
             ssh -F ssh_config host yum -y install epel-release
             ssh -F ssh_config host yum -y install distgen
+
+            # Install docker-squash (TEMPORARY FIX - https://gitlab.cee.redhat.com/platform-eng-core-services/coreservices-jenkins-slaves/merge_requests/17)
+            ssh -F ssh_config host yum -y install rh-python36-python-virtualenv
+            ssh -F ssh_config host 'scl enable rh-python36 -- virtualenv --python python3 /usr/local/docker-squash && . /usr/local/docker-squash/bin/activate && \
+              pip install "docker-squash==1.0.5" && echo ". /usr/local/docker-squash/bin/activate" > /root/.bashrc'
