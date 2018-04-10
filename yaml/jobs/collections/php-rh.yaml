@@ -49,3 +49,11 @@
             use_hooks: false
             not_automatic: true
             trigger_phrase: 'test-openshift'
+        - '{job_prefix}-{name}':
+            job_prefix: 'SCLo-container'
+            name: 'php-rh-fedora'
+            targetOS: 'fedora'
+            context: 'fedora'
+            use_hooks: true
+            not_automatic: false
+            trigger_phrase: 'test'
