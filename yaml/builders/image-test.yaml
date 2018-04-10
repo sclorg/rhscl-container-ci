@@ -7,6 +7,17 @@
             #!/bin/bash
             set -ex
 
+            # Generate sources, commit changes into generated branch and show diff
+            ssh -F ssh_config host 'set -ex; \
+              cd sources; GIT_HASH=$(git rev-parse HEAD); \
+              git config user.name "SCLorg Jenkins"; git config user.email "sclorg@redhat.com"; \
+              if git checkout generated; then \
+                git submodule update; \
+                result="$(./update $GIT_HASH | tail -n 1)"; \
+                [ "$result" = "Nothing changed" ] || git diff generated~1 generated; \
+                git checkout -f $GIT_HASH && git submodule update; \
+              fi;'
+
             # Run make for base image and for each dependent image
             timeout 2h ssh -F ssh_config host 'set -ex; \
               cd sources; make test TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
