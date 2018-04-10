@@ -1,6 +1,5 @@
 # Requires:
-# {OS}
-# {release}
+# {targetOS}
 - builder:
     name: 'image-test'
     builders:
@@ -10,13 +9,13 @@
 
             # Run make for base image and for each dependent image
             timeout 2h ssh -F ssh_config host 'set -ex; \
-              cd sources; make test TARGET={OS}{release} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
+              cd sources; make test TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
               for remote in $(git remote | grep test_); do \
                 git checkout $remote/master; \
                 git submodule update --init; \
                 versions=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); \
                 echo "Testing ${{remote#test_}}/master - version ${{versions##* }}"; \
-                make test TARGET={OS}{release} VERSIONS=${{versions##* }}; \
+                make test TARGET={targetOS} VERSIONS=${{versions##* }}; \
               done; \
               git checkout -f origin/master;'
 

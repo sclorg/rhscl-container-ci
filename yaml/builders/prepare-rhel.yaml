@@ -1,11 +1,11 @@
 - builder:
-    name: 'prepare-rhel'
+    name: 'prepare-rhscl-images'
     builders:
         - shell: |
             #!/bin/bash
             set -ex
 
-            resalloc --connection http://172.16.39.21:49100/ ticket --tag rhel{release} > ticket
+            resalloc --connection http://172.16.39.21:49100/ ticket --tag rhel7 > ticket
             host=$(resalloc --connection http://172.16.39.21:49100/ ticket-wait $(cat ticket))
 
             cat > ssh_config << EOF
@@ -15,7 +15,7 @@
             ConnectTimeout 10
 
             Host host
-              Hostname ${{host}}
+              Hostname ${host}
               IdentityFile ~/.ssh/id_rsa_resalloc
             EOF
 

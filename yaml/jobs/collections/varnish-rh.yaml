@@ -2,10 +2,9 @@
 #   name: software collection name with namespace, e.g. httpd24-rh
 #   gituser: name of github user or organization
 #   gitproject: name of a repository to test
-#   job_prefix: container jobs in ci.centos.org have to be prefixed with SCLo-container
-#                              in internal Jenkins have prefix rhscl-images
-#   OS: what OS to use, rhel or centos
-#   release: version of RHEL/CentOS to test, e.g. 6
+#   job_prefix: container jobs: in ci.centos.org have to be prefixed with SCLo-container
+#   (defines also used OS)    | in internal Jenkins have prefix rhscl-images
+#   targetOS: value of TARGET variable for make (see https://github.com/sclorg/container-common-scripts)
 #   use_hooks: true if use github triggers to start run, otherwise false
 #   not_automatic: false if run should start automatically for sclorg/ org members
 #   trigger_phrase: what phase can trigger this job - '.*\[{trigger_phrase}\].*'
@@ -15,40 +14,38 @@
     name: varnish-rh
     gitproject: varnish-container
     gituser: sclorg
-    release: 7
     jobs:
         - '{job_prefix}-{name}':
-            OS: 'centos'
             job_prefix: 'SCLo-container'
+            targetOS: 'centos7'
             context: 'centos7'
             use_hooks: true
             not_automatic: false
             trigger_phrase: 'test'
         - '{job_prefix}-{name}':
-            OS: 'rhel'
             job_prefix: 'rhscl-images'
+            targetOS: 'rhel7'
             context: 'rhel7'
             use_hooks: false
             not_automatic: false
             trigger_phrase: 'test'
         - 'rhscl-images-{name}-build':
-            OS: 'centos'
+            targetOS: 'centos'
             project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'centos'
         - '{job_prefix}-{name}':
-            OS: 'centos'
             job_prefix: 'SCLo-container'
             name: 'varnish-rh-openshift'
+            targetOS: 'centos7'
             context: 'centos7 - openshift'
             use_hooks: true
             not_automatic: true
             trigger_phrase: 'test-openshift'
         - '{job_prefix}-{name}':
-            OS: 'rhel'
             job_prefix: 'rhscl-images'
             name: 'varnish-rh-openshift'
+            targetOS: 'rhel7'
             context: 'rhel7 - openshift'
             use_hooks: false
             not_automatic: true
             trigger_phrase: 'test-openshift'
-

@@ -2,14 +2,13 @@
 # {name}
 # {gituser}
 # {gitproject}
-# {OS}
-# {release}
+# {targetOS}
 # {trigger_phrase}
 # {project_trigger}
 # {hub_namespace}
 - job-template:
     name: 'rhscl-images-{name}-build'
-    node: slave_rhel{release}_root
+    node: slave_rhel7_root
     scm:
         - images-build:
             gituser: '{gituser}'
@@ -21,8 +20,7 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
-        - prepare-rhel:
-            release: '{release}'
+        - prepare-rhscl-images
         - shell: |
             #!/bin/bash
             set -ex
@@ -32,15 +30,12 @@
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
         - image-test:
-            OS: '{OS}'
-            release: '{release}'
+            targetOS: 'rhel7'
         - image-build-push:
-            OS: '{OS}'
-            release: '{release}'
+            targetOS: 'rhel7'
             hub_namespace: '{hub_namespace}'
         - docker-hub-update:
-            OS: '{OS}'
-            release: '{release}'
+            targetOS: 'rhel7'
             hub_namespace: '{hub_namespace}'
     publishers:
         - release-vm

@@ -3,14 +3,13 @@
 # {gituser}
 # {gitproject}
 # {job_prefix}
-# {OS}
-# {release}
+# {targetOS}
 # {use_hooks}
 # {not_automatic}
 # {trigger_phrase}
 - job-template:
     name: '{job_prefix}-{name}'
-    node: sclo-sig||slave_rhel{release}_root
+    node: sclo-sig||slave_rhel7_root
     scm:
         - images-pull-test:
             gituser: '{gituser}'
@@ -24,8 +23,7 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
-        - prepare-{OS}:
-            release: '{release}'
+        - prepare-{job_prefix}
         - shell: |
             #!/bin/bash
             set -ex
@@ -35,7 +33,6 @@
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
         - image-{trigger_phrase}:
-            OS: '{OS}'
-            release: '{release}'
+            targetOS: '{targetOS}'
     publishers:
         - release-vm

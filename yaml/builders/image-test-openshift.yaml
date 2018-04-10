@@ -1,6 +1,5 @@
 # Requires:
-# {OS}
-# {release}
+# {targetOS}
 - builder:
     name: 'image-test-openshift'
     builders:
@@ -10,5 +9,5 @@
 
             # Run make for base image and for each dependent image
             timeout 2h ssh -F ssh_config host 'set -ex; \
-              cd sources; make test-openshift TARGET={OS}{release} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
+              cd sources; make test-openshift TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
 

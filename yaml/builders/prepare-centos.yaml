@@ -1,11 +1,11 @@
 - builder:
-    name: 'prepare-centos'
+    name: 'prepare-SCLo-container'
     builders:
         - shell: |
             #!/bin/bash
             set -ex
 
-            cico node get -f value --retry-count 5 --retry-interval 60 --arch x86_64 --release {release} --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
+            cico node get -f value --retry-count 5 --retry-interval 60 --arch x86_64 --release 7 --count 1 --api-key $(cat ~/duffy.key) | tee cico.out
             tail -n 1 cico.out | cut -d ' ' -f 7 > ssid
             tail -n 1 cico.out | cut -d ' ' -f 2 > host
             h=$(head -n 1 host)
@@ -19,7 +19,7 @@
             ConnectTimeout 10
 
             Host host
-              Hostname ${{h}}.ci.centos.org
+              Hostname ${h}.ci.centos.org
             EOF
 
             # Create script for cleanup

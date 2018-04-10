@@ -1,6 +1,5 @@
 # Requires:
-# {OS}
-# {release}
+# {targetOS}
 # {hub_namespace}
 - builder:
     name: 'image-build-push'
@@ -11,7 +10,7 @@
 
             # Push images
             ssh -F ssh_config host 'set -ex; \
-              cd sources; make tag TARGET={OS}{release} | tee output;'
+              cd sources; make tag TARGET={targetOS} | tee output;'
 
             ssh -F ssh_config host bash << 'EOF'
             set -ex; cd sources;

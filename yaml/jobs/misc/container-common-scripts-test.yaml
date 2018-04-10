@@ -5,14 +5,14 @@
     release: 7
     jobs:
         - '{job_prefix}-container-common-scripts-test':
-            OS: 'centos'
             job_prefix: 'SCLo-container'
+            targetOS: 'centos7'
             use_hooks: true
             not_automatic: true
             trigger_phrase: 'test'
         - '{job_prefix}-container-common-scripts-test':
-            OS: 'rhel'
             job_prefix: 'rhscl-images'
+            targetOS: 'rhel7'
             use_hooks: false
             not_automatic: true
             trigger_phrase: 'test'
@@ -26,13 +26,12 @@
             gitproject: '{gitproject}'
     triggers:
         - github-pr:
-            context: '{OS}{release}'
+            context: '{targetOS}'
             use_hooks: '{use_hooks}'
             not_automatic: '{not_automatic}'
             trigger_phrase: '{trigger_phrase}'
     builders:
-        - prepare-{OS}:
-            release: '{release}'
+        - prepare-{job_prefix}
         - shell: |
             #!/bin/bash
             set -ex

@@ -1,6 +1,5 @@
 # Requires:
-# {OS}
-# {release}
+# {targetOS}
 # {hub_namespace}
 - builder:
     name: 'docker-hub-update'
@@ -22,7 +21,7 @@
             source dhwebapi/bin/activate
             cd sources
             for version in $(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); do
-              for image in $(make tag TARGET={OS}{release} VERSIONS=${{version}} | grep -- '-> Tagging image' | cut -d' ' -f 6 | sed "s/'//g"); do
+              for image in $(make tag TARGET={targetOS} VERSIONS=${{version}} | grep -- '-> Tagging image' | cut -d' ' -f 6 | sed "s/'//g"); do
                 echo "Updating summary for ${{image}}"
                 description=$(docker inspect --format='{{{{.Config.Labels.summary}}}}' ${{image}} || :)
 
