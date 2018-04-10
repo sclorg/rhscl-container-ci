@@ -8,6 +8,14 @@
             #!/bin/bash
             set -ex
 
+            # Push generated branch
+            ssh -F ssh_config host 'set -ex; cd sources; \
+              if git branch | grep -q generated; then \
+                GIT_URL=$(git remote -v | head -n 1 | tr '\t' ' ' | cut -f 2 -d' '); \
+                git remote add auth_origin ${{GIT_URL/#git:\/\//https:\/\/$GITHUB_TOKEN@}}; \
+                git push auth_origin generated; \
+              fi'
+
             # Push images
             ssh -F ssh_config host 'set -ex; \
               cd sources; make tag TARGET={targetOS} | tee output;'
