@@ -30,12 +30,12 @@
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
         - image-test:
-            targetOS: 'rhel7'
+            targetOS: 'centos7'
         - image-build-push:
-            targetOS: 'rhel7'
+            targetOS: 'centos7'
             hub_namespace: '{hub_namespace}'
         - docker-hub-update:
-            targetOS: 'rhel7'
+            targetOS: 'centos7'
             hub_namespace: '{hub_namespace}'
     publishers:
         - release-vm

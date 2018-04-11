@@ -30,7 +30,6 @@
             not_automatic: false
             trigger_phrase: 'test'
         - 'rhscl-images-{name}-build':
-            targetOS: 'centos'
             project_trigger: '%TRIGGER%'
             hub_namespace: '%HUB_NAMESPACE%'
         - '{job_prefix}-{name}':
