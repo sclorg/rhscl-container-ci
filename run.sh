@@ -19,7 +19,13 @@ source $THISDIR/local/bin/activate
 # Install JJB into the venv
 if ! pip show jenkins-job-builder >/dev/null 2>&1; then
   echo "Installing jenkins-job-builder into an isolated virtualenv..."
-  pip install jenkins-job-builder
+  # If we used latest version here (2.0.7 at the time of writing this) our we
+  # would have to update 'release-vm.yaml' file so it contains
+  # 'generict-script' hash (not string!) with 'file-path: ./.cleanup.sh'
+  # option.  But the uploaded build config would be mistreated by our (rather
+  # old) jenkins instances and the parameter would be in turn ignored entirely.
+  # TODO: because ^^ update jenkins instances first!
+  pip install jenkins-job-builder==2.0.2
 fi
 
 # Generate a JJB config files
