@@ -14,7 +14,7 @@
       - credentials-binding:
           - text:
               variable: "GITHUB_TOKEN"
-              credential-id: 'ffe788e8-b346-45d8-a1a0-2370d12c2672'
+              credential-id: 'f12f925d-cbc0-47fd-ab22-47f8d63ed6c0'
     scm:
         - images-build:
             gituser: '{gituser}'
