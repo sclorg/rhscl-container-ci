@@ -7,11 +7,11 @@ THISDIR=$(dirname ${BASH_SOURCE[0]})
 
 # Generate a virtualenv to install JJB into, in a gitignored dir
 if [ ! -d $THISDIR/local ]; then
-  if ! type virtualenv >/dev/null 2>&1; then
+  if ! type virtualenv-3 >/dev/null 2>&1; then
     echo "python-virtualenv must be installed to run this script"
     exit 1
   fi
-  virtualenv $THISDIR/local
+  virtualenv-3 --system-site-packages "$THISDIR/local"
 fi
 
 source $THISDIR/local/bin/activate
