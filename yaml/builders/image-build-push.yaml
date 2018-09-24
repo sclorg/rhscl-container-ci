@@ -27,9 +27,11 @@
             ssh -F ssh_config host bash << 'EOF'
             set -ex; cd sources;
             for image in $(cat output | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
-              echo "Pushing ${{image}}"
-              docker tag ${{image}} docker.io/${{image}}
-              HOME=~/.docker_credentials/{hub_namespace} docker push docker.io/${{image}}
+              # By default images are now tagged into localhost/ registry
+              image_name=${{image/#localhost/docker.io}}
+              echo "Pushing ${{image_name}}"
+              docker tag ${{image}} ${{image_name}}
+              HOME=~/.docker_credentials/{hub_namespace} docker push ${{image_name}}
             done
             rm output
             EOF
