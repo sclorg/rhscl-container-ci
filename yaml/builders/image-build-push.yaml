@@ -28,7 +28,8 @@
             set -ex; cd sources;
             for image in $(cat output | grep -- '-> Tagging image' | cut -d' ' -f 6,8 | sed "s/'//g"); do
               # By default images are now tagged into localhost/ registry
-              image_name=${{image/#localhost/docker.io}}
+              image_name=${{image/#localhost\//}}
+              image_name=docker.io/${{image_name}}
               echo "Pushing ${{image_name}}"
               docker tag ${{image}} ${{image_name}}
               HOME=~/.docker_credentials/{hub_namespace} docker push ${{image_name}}
