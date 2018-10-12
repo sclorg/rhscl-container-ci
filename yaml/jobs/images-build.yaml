@@ -44,5 +44,6 @@
         - upload-log-{job_prefix}:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
+        - build-status
         - email:
             recipients: 'mskalick@redhat.com hhorak@redhat.com'
