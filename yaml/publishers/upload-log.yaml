@@ -11,7 +11,7 @@
             #!/bin/bash
             set -e
 
-            BUILD_LOG=$(curl -s -u "$JENKINS_CREDENTIALS" -k "$BUILD_URL/consoleText")
+            curl -s -u "$JENKINS_CREDENTIALS" -k "$BUILD_URL/consoleText" > build_log
             GIT_COMMIT=$(git rev-parse HEAD)
             GITHUB_USERNAME="rhscl-bot"
             COMMIT_JSON=$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/{gituser}/{gitproject}/commits/"$GIT_COMMIT")
@@ -23,11 +23,14 @@
             # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
             import json, requests, base64
 
+            with open('build_log', 'r') as f: # Read the log of this build saved in a previous step
+              build_log = f.read()
+
             gist = {{"description": "$COMMIT_URL",
                     "public": False,
                     "files": {{
                        '{gitproject}' + '-#' + '$BUILD_NUMBER.sh' : {{
-                         "content": r"""$BUILD_LOG""" }} }} }}
+                         "content": build_log }} }} }}
 
             req = requests.post("https://api.github.com/gists", data=json.dumps(gist),
                               auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
@@ -38,6 +41,8 @@
               f.write("BUILD_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
             EOF
             python upload.py
+
+            rm build_log
 
         - inject:
             properties-file: 'build_log_url.prop'
