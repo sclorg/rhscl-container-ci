@@ -37,9 +37,18 @@
             ssh -F ssh_config host yum -y install source-to-image rh-python36-python-virtualenv origin-clients distgen
             ssh -F ssh_config host "sed -i \"s|OPTIONS='|OPTIONS='--insecure-registry 172.30.0.0/16 |\" /etc/sysconfig/docker; iptables -F"
             ssh -F ssh_config host service docker start
-            # Install docker-squash
-            ssh -F ssh_config host 'scl enable rh-python36 -- virtualenv --python python3 /usr/local/docker-squash && . /usr/local/docker-squash/bin/activate && \
-              pip install "docker-squash==1.0.5" && echo ". /usr/local/docker-squash/bin/activate" > /root/.bashrc'
+            # Install docker-squash and conu
+            ssh -F ssh_config host <<'EOF'
+              scl enable rh-python36 -- virtualenv --python python3 /usr/local/python-tools
+              . /usr/local/python-tools/bin/activate
+              pip install docker-squash conu
+              echo ". /usr/local/python-tools/bin/activate" > /root/.bashrc
+              # Hack docker-squash --version - 1.0.5 is required
+              # (TEMPORARY FIX - until all images contain fixed https://github.com/sclorg/container-common-scripts/pull/100
+              # https://github.com/sclorg/container-common-scripts/issues/101)
+              echo 'docker-squash() { if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }' >> /root/.bashrc
+              echo 'export -f docker-squash' >> /root/.bashrc
+            EOF
+
             # Enable sudo for ssh (required by test cases)
             ssh -F ssh_config host 'sed -i -e "s|Defaults    requiretty||" /etc/sudoers'
-
