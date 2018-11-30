@@ -18,6 +18,8 @@
 - job-template:
     name: '{job_prefix}-container-common-scripts-test'
     node: sclo-sig||slave_rhel7_root
+    wrappers:
+      - wrappers-{job_prefix}
     scm:
         - images-pull-test:
             gituser: '{gituser}'
