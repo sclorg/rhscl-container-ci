@@ -33,7 +33,10 @@
             chmod a+x .cleanup.sh
 
             # Prepare docker
-            ssh -F ssh_config host yum -y install docker perl git centos-release-scl-rh rsync golang-github-cpuguy83-go-md2man groff-base centos-release-openshift-origin epel-release
+            # WORKAROUND - installing go-md2man tool from cbs directly, all golang packages were removed from repos (golang is deprecated in latest RHEL7)
+            #              https://wiki.centos.org/Manuals/ReleaseNotes/CentOS7.1810#head-e467ac744557df926ed56dc0106f43961e5ffc38
+            ssh -F ssh_config host yum -y install docker perl git centos-release-scl-rh rsync groff-base centos-release-openshift-origin epel-release \
+                                    http://cbs.centos.org/kojifiles/packages/golang-github-cpuguy83-go-md2man/1.0.4/4.0.el7/x86_64/golang-github-cpuguy83-go-md2man-1.0.4-4.0.el7.x86_64.rpm
             ssh -F ssh_config host yum -y install source-to-image rh-python36-python-virtualenv origin-clients distgen
             ssh -F ssh_config host "sed -i \"s|OPTIONS='|OPTIONS='--insecure-registry 172.30.0.0/16 |\" /etc/sysconfig/docker; iptables -F"
             ssh -F ssh_config host service docker start
