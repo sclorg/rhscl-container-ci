@@ -12,14 +12,14 @@
             set -e
 
             # Generate sources, commit changes into generated branch and show diff
-            DIFF=$(ssh -F ssh_config host 'set -e; \
+            ssh -F ssh_config host 'set -e; \
               cd sources; \
               if git branch | grep -q generated; then \
                 git diff origin/generated..generated; \
-              fi;')
+              fi;' > diff
 
             # Generate diff only once and only if something differs
-            if [[ '{trigger_phrase}' != 'test' ]] || [[ -z "${{DIFF:-}}" ]] || [[ -z "${{GITHUB_TOKEN:-}}" ]]; then
+            if [[ '{trigger_phrase}' != 'test' ]] || [[ ! -s diff ]] || [[ -z "${{GITHUB_TOKEN:-}}" ]]; then
               exit 0;
             fi
 
@@ -34,11 +34,15 @@
             # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
             import json, requests, base64
 
+            diff = ""
+            with open("./diff", "r") as f:
+              diff = f.read()
+
             gist = {{"description": "$COMMIT_URL",
                     "public": False,
                     "files": {{
                        '{gitproject}' + '-#' + '$BUILD_NUMBER.diff' : {{
-                         "content": r"""$DIFF""" }} }} }}
+                         "content": diff }} }} }}
 
             req = requests.post("https://api.github.com/gists", data=json.dumps(gist),
                               auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
@@ -72,5 +76,5 @@
             EOF
             python set-status.py
 
-            rm upload.py set-status.py
+            rm upload.py set-status.py diff
 
