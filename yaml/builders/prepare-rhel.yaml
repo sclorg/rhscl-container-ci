@@ -40,7 +40,3 @@
               echo 'export -f docker-squash' >> /root/.bashrc
             EOF
 
-            # WORKAROUND - installing newer source-to-image from Fedora Rawhide, needed for running conu tests (sclorg/s2i-ruby-container/pull/167)
-            #              IMHO, the best way to solve is to do epel build (epel is enabled already)
-            ssh -F ssh_config host yum -y install https://kojipkgs.fedoraproject.org//packages/source-to-image/1.1.7/3.fc29/x86_64/source-to-image-1.1.7-3.fc29.x86_64.rpm
-
