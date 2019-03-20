@@ -15,7 +15,7 @@ Now tests are run in two Jenkins instances:
 
   - JJB configuration file `jenkins_jobs.ini`
 
-* Non-public Jenkins server (to know more ask mskalick@redhat.com)
+* Non-public Jenkins server (to know more ask hhorak@redhat.com)
   - jobs to test Pull Requests (test RHEL based variants of images)
 
   - jobs to build CentOS based variants of images on every new commit and
