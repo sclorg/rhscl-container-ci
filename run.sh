@@ -5,13 +5,21 @@
 
 THISDIR=$(dirname ${BASH_SOURCE[0]})
 
+VIRTUALENV=virtualenv-3
+
 # Generate a virtualenv to install JJB into, in a gitignored dir
 if [ ! -d $THISDIR/local ]; then
-  if ! type virtualenv-3 >/dev/null 2>&1; then
-    echo "python-virtualenv must be installed to run this script"
+  if ! rpm -q python3-virtualenv &>/dev/null; then
+    echo "python3-virtualenv must be installed to run this script"
     exit 1
   fi
-  virtualenv-3 --system-site-packages "$THISDIR/local"
+
+  # newer Fedora versions use /bin/virtualenv
+  test -x "/usr/bin/$VIRTUALENV" || VIRTUALENV=virtualenv
+
+  $VIRTUALENV --system-site-packages "$THISDIR/local"
+else
+  echo >&2 " !! re-using virtualenv $THISDIR/local !!"
 fi
 
 source $THISDIR/local/bin/activate
