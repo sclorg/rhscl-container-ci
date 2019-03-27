@@ -17,6 +17,6 @@ perl		rh	sclorg	s2i-perl-container	rhscl-images-s2i-rh-build			centos
 nodejs		rh	sclorg	s2i-nodejs-container	rhscl-images-s2i-rh-build			centos
 ruby		rh	sclorg	s2i-ruby-container	rhscl-images-s2i-rh-build			centos
 golang		rh	sclorg	golang-container	rhscl-images-s2i-rh-build			centos
-llvm		rh	sclorg	llvm-container		rhscl-images-centos_centos7-rh-trigger			centos
+llvm		rh	sclorg	llvm-container		rhscl-images-centos_centos7-rh-trigger		centos
 cassandra	rh	sclorg	cassandra-container	rhscl-images-s2i-rh-build			centos
-memcached		rh	sclorg	memcached	rhscl-images-centos_centos7-rh-trigger		centos
+memcached	rh	sclorg	memcached		rhscl-images-centos_centos7-rh-trigger		centos
