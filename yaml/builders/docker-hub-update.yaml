@@ -17,6 +17,9 @@
 
             # Update Docker Hub
             ssh -F ssh_config host << 'EOF'
+            # refresh the token that expires too often
+            curl -L https://url.corp.redhat.com/cs-dh-web-tok >/root/.docker_credentials/centos/hub-webapi-token
+
             set -ex;
             source dhwebapi/bin/activate
             cd sources
