@@ -30,6 +30,10 @@
             image_id=$(cat output | grep -- '-> Tagging image' | cut -d' ' -f 4 | sed "s/'//g")
             image_tags=$(docker image inspect "$image_id" --format '{{range $i, $tag := .RepoTags}}{{$tag}} {{end}}')
             for image in $image_tags; do
+              case $image in
+                *:raw|*:squashed) continue ;;
+              esac
+
               # By default images are now tagged into localhost/ registry
               image_name=${{image/#localhost\//}}
               image_name=docker.io/${{image_name}}
