@@ -27,8 +27,11 @@
             ssh -F ssh_config host bash << 'EOF'
             set -ex; cd sources;
 
-            image_id=$(cat output | grep -- '-> Tagging image' | cut -d' ' -f 4 | sed "s/'//g")
-            image_tags=$(docker image inspect "$image_id" --format '{{range $i, $tag := .RepoTags}}{{$tag}} {{end}}')
+            image_ids=$(cat output | grep -- '-> Tagging image' | cut -d' ' -f 4 | sed "s/'//g")
+            for image_id in $image_ids; do
+                image_tags+=$(docker image inspect "$image_id" --format '{{range $i, $tag := .RepoTags}}{{$tag}} {{end}}')
+            done
+
             for image in $image_tags; do
               case $image in
                 *:raw|*:squashed) continue ;;
