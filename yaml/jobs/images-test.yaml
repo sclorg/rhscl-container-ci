@@ -23,7 +23,8 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
-        - prepare-{job_prefix}
+        - prepare-{job_prefix}:
+            restag: '{targetOS}'
         - shell: |
             #!/bin/bash
             set -ex

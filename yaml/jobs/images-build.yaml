@@ -22,7 +22,8 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
-        - prepare-{job_prefix}
+        - prepare-{job_prefix}:
+            restag: 'rhel7'
         - shell: |
             #!/bin/bash
             set -ex

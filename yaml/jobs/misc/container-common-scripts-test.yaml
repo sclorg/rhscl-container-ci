@@ -14,9 +14,17 @@
             targetOS: 'rhel7'
             not_automatic: true
             trigger_phrase: 'test'
+        - '{job_prefix}-container-common-scripts-test':
+            job_prefix: 'rhscl-images'
+            job_suffix: '-rhel8'
+            targetOS: 'rhel8'
+            not_automatic: true
+            trigger_phrase: 'test'
 
 - job-template:
-    name: '{job_prefix}-container-common-scripts-test'
+    name: '{job_prefix}-container-common-scripts-test{job_suffix}'
+    id: '{job_prefix}-container-common-scripts-test'
+    job_suffix: ''
     node: sclo-sig||slave_rhel7_root
     wrappers:
       - wrappers-{job_prefix}
@@ -30,7 +38,8 @@
             not_automatic: '{not_automatic}'
             trigger_phrase: '{trigger_phrase}'
     builders:
-        - prepare-{job_prefix}
+        - prepare-{job_prefix}:
+            restag: '{targetOS}'
         - shell: |
             #!/bin/bash
             set -ex

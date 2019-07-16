@@ -1,3 +1,5 @@
+# parameters:
+#   restag: name of resalloc tag
 - builder:
     name: 'prepare-rhscl-images'
     builders:
@@ -7,7 +9,7 @@
 
             rconnection="--connection http://10.0.149.99:49100/"
 
-            resalloc $rconnection ticket --tag rhel7 > ticket
+            resalloc $rconnection ticket --tag {restag} > ticket
             ticket=$(cat ticket)
             host=$(resalloc $rconnection ticket-wait "$ticket")
 
@@ -18,7 +20,7 @@
             ConnectTimeout 10
 
             Host host
-              Hostname ${host}
+              Hostname ${{host}}
               IdentityFile ~/.ssh/id_rsa_resalloc
             EOF
 
@@ -39,7 +41,7 @@
               # Hack docker-squash --version - 1.0.5 is required
               # (TEMPORARY FIX - until all images contain fixed https://github.com/sclorg/container-common-scripts/pull/100
               # https://github.com/sclorg/container-common-scripts/issues/101)
-              echo 'docker-squash() { if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }' >> /root/.bashrc
+              echo 'docker-squash() {{ if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }}' >> /root/.bashrc
               echo 'export -f docker-squash' >> /root/.bashrc
             EOF
 

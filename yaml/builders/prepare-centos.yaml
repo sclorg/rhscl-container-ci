@@ -19,7 +19,7 @@
             ConnectTimeout 10
 
             Host host
-              Hostname ${h}.ci.centos.org
+              Hostname ${{h}}.ci.centos.org
             EOF
 
             # Create script for cleanup
@@ -57,7 +57,7 @@
               # Hack docker-squash --version - 1.0.5 is required
               # (TEMPORARY FIX - until all images contain fixed https://github.com/sclorg/container-common-scripts/pull/100
               # https://github.com/sclorg/container-common-scripts/issues/101)
-              echo 'docker-squash() { if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }' >> /root/.bashrc
+              echo 'docker-squash() {{ if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }}' >> /root/.bashrc
               echo 'export -f docker-squash' >> /root/.bashrc
             EOF
 

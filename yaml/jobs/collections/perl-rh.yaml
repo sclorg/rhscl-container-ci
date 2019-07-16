@@ -51,3 +51,10 @@
             context: 'fedora'
             not_automatic: false
             trigger_phrase: 'test'
+        - '{job_prefix}-{name}':
+            name: 'perl-rh-rhel8'
+            job_prefix: 'rhscl-images'
+            targetOS: 'rhel8'
+            context: 'rhel8'
+            not_automatic: false
+            trigger_phrase: 'test'
