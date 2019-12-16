@@ -20,14 +20,14 @@
             # Run make for base image and for each dependent image
             timeout 2h ssh -F ssh_config host 'set -ex; \
               cd sources; make test TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
-              [ -f ./test/run-conu ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
+              [ -f ./test/run-conu ] && [ "{targetOS}" != "rhel8" ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
               for remote in $(git remote | grep test_); do \
                 git checkout $remote/master; \
                 git submodule update --init; \
                 versions=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); \
                 echo "Testing ${{remote#test_}}/master - version ${{versions##* }}"; \
                 make test TARGET={targetOS} VERSIONS=${{versions##* }}; \
-                [ -f ./test/run-conu ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
+                [ -f ./test/run-conu ] && [ "{targetOS}" != "rhel8" ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
               done; \
               git checkout -f origin/master;'
 
