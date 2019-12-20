@@ -34,14 +34,3 @@
             EOF
             chmod a+x .cleanup.sh
 
-            # Install conu (TEMPORARY FIX - https://gitlab.cee.redhat.com/platform-eng-core-services/coreservices-jenkins-slaves/merge_requests/20)
-            ssh -F ssh_config host <<'EOF'
-              pip uninstall -y docker-squash docker-py
-              pip install docker-squash conu
-              # Hack docker-squash --version - 1.0.5 is required
-              # (TEMPORARY FIX - until all images contain fixed https://github.com/sclorg/container-common-scripts/pull/100
-              # https://github.com/sclorg/container-common-scripts/issues/101)
-              echo 'docker-squash() {{ if [ "$1" == "--version" ]; then echo "1.0.5"; else eval $(which docker-squash) $@ 1>&2; fi }}' >> /root/.bashrc
-              echo 'export -f docker-squash' >> /root/.bashrc
-            EOF
-
