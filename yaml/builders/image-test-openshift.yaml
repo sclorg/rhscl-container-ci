@@ -1,5 +1,6 @@
 # Requires:
 # {targetOS}
+# {trigger_phrase}
 - builder:
     name: 'image-test-openshift'
     builders:
@@ -7,7 +8,12 @@
             #!/bin/bash
             set -ex
 
-            # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host 'set -ex; \
-              cd sources; make test-openshift TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
-
+            if [ "{trigger_phrase}" == "test-openshift-4" ]; then
+              # Run make for base image and for each dependent image
+              timeout 2h ssh -F ssh_config host 'set -ex; \
+                cd sources; make test-openshift-4 TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
+            else
+              # Run make for base image and for each dependent image
+              timeout 2h ssh -F ssh_config host 'set -ex; \
+                cd sources; make test-openshift TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
+            fi
