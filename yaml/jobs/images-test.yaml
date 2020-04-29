@@ -35,6 +35,7 @@
 
         - image-{trigger_phrase}:
             targetOS: '{targetOS}'
+            trigger_phrase: '{trigger_phrase}'
     publishers:
         - upload-diff:
             gituser: '{gituser}'
