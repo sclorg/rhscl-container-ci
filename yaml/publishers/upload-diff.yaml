@@ -24,7 +24,7 @@
             fi
 
             GIT_COMMIT=$(git rev-parse HEAD)
-            GITHUB_USERNAME="rhscl-bot"
+            GITHUB_USERNAME="rhscl-automation"
             COMMIT_JSON=$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/{gituser}/{gitproject}/commits/"$GIT_COMMIT")
             COMMIT_URL=$(echo $COMMIT_JSON | python -c "import sys, json; api_res=json.load(sys.stdin); print api_res['html_url'];")
 

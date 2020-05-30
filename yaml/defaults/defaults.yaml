@@ -32,7 +32,7 @@
       - credentials-binding:
           - text:
               variable: "GITHUB_TOKEN"
-              credential-id: 'af141230-0e73-4daa-a28f-152a7a4dc103'
+              credential-id: 'rhscl-automation-token'
       - credentials-binding:
           - username-password:
               variable: "JENKINS_CREDENTIALS"
