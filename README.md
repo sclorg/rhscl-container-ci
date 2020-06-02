@@ -49,10 +49,19 @@ directory on slave01.ci.centos.org.
 
 ## Using run.sh
 
-`run.sh` is simple wrapper for jenkins-jobs command. It supports "update",
-"test" and "delete" commands. And according specified name prefix of jobs it
+`run.sh` is simple wrapper for `jenkins-jobs` command. It supports `update`,
+`test` and `delete` commands. And according specified name prefix of jobs it
 selects right configuration file and adds `-r $THISDIR/yaml` to specify path
 for commands.
+
+To test the configuration of one job, run:
+
+    ./run.sh test rhscl-images-ruby-rh
+    echo $?
+
+Once happy with the result, to test your config change on a single job, run:
+
+    ./run.sh update rhscl-images-ruby-rh
 
 During updating jobs you can select jobs by globbing. For example to update
 jobs configured for CentOS CI run
@@ -91,6 +100,12 @@ is *not* configured to use CentOS CI infrastructure.
 **Projects do not have to use all three default jobs. Some files in
 `./yaml/jobs/collections/` can be manually created/updated. So be careful when
 regenerating all project files.**
+
+For regenerating all project files (if you really know what you do; see a comment above), run:
+```
+rm yaml/jobs/collections/*yaml
+./run test
+```
 
 ## How to add tests for a new image
 
@@ -132,6 +147,7 @@ A) For the pull-request status update, let the Jenkins create a token itself, wi
 3. Create a new entry with `https://api.github.com` as GitHub Server API URL, and picking the previously created `user`:`password` credentials
 4. Click Create API Token and let the Jenkins to create Github token
 5. This token is later available in *Jenkins -> Credentials -> System -> api.github.com*
+6. Pick this token in the Job GitHub API credentials
 
 B) For Gist upload and generated branch update, create another token manually with `gist` and `repo:status` permissions:
 1. Generate a token on github.com (*Settings -> Developer settings -> Personal access tokens*)
