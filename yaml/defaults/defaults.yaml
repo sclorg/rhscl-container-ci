@@ -29,6 +29,7 @@
     name: 'wrappers-rhscl-images'
     wrappers:
       - timestamps
+      - ansicolor
       - credentials-binding:
           - text:
               variable: "GITHUB_TOKEN"
