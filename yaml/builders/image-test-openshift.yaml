@@ -8,5 +8,17 @@
             set -ex
 
             # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host 'set -ex; \
-              cd sources; make test-openshift TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true;'
+            timeout 2h ssh -F ssh_config host bash << 'EOF'
+            set -ex
+            cd sources
+
+            # Start local cluster only once for all images, restarting cluster takes long and often fails
+            tmplib=$(mktemp)
+            curl https://raw.githubusercontent.com/sclorg/container-common-scripts/master/test-lib-openshift.sh >"$tmplib"
+            source common/test-lib-openshift.sh
+            echo "Starting a local cluster before running the tests..."
+            ct_os_cluster_up && echo "A local cluster started successfully before running the tests." || echo "ERROR: A local cluster not started before starting the tests."
+            sleep 10
+
+            make test-openshift TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true
+            EOF
