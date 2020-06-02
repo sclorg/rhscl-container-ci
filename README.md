@@ -114,3 +114,27 @@ file and run `./run.sh` (missing project files are generated):
     `'Issue comment'` and `'Pull request'`.
 
 4. If the repository is supposed to be maintaned (write/admin permissions) only by people from RedHat, add the repository to **'RedHat maintained'** github team. There is a jenkins job which check permissions for all repositories listed there.
+
+## Creating necessary credentials in Jenkins
+
+**Jenkins jobs need permissions to access github pull-requests for two reasons:**
+
+A) Update the status of the pull-request
+
+B) Creating a gist file to share the job log, that is otherwise available behind a firewall only; and updating generated branch
+
+**This is how the credentials are created for each case:**
+
+A) For the pull-request status update, let the Jenkins create a token itself, with all necessary permissions:
+
+1. create github `user`:`password` credentials in *Jenkins -> Credentials -> System -> Jenkins -> Global credentials* with a type "Username with password"
+2. Go to the *Manage Jenkins -> Configure System* and find "GitHub Pull Request Builder" section
+3. Create a new entry with `https://api.github.com` as GitHub Server API URL, and picking the previously created `user`:`password` credentials
+4. Click Create API Token and let the Jenkins to create Github token
+5. This token is later available in *Jenkins -> Credentials -> System -> api.github.com*
+
+B) For Gist upload and generated branch update, create another token manually with `gist` and `repo:status` permissions:
+1. Generate a token on github.com (*Settings -> Developer settings -> Personal access tokens*)
+2. Create a "Secret text" type Jenkins credential token in *Jenkins -> Credentials -> System -> Global credentials*
+3. Export this credential for jobs in Build *Environment -> Use secret text(s) or file(s)* and choose an environment variable that this token will be accessed by
+4. Use the credential in the build steps via an environment
