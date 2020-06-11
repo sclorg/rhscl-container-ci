@@ -154,3 +154,6 @@ B) For Gist upload and generated branch update, create another token manually wi
 2. Create a "Secret text" type Jenkins credential token in *Jenkins -> Credentials -> System -> Global credentials*
 3. Export this credential for jobs in Build *Environment -> Use secret text(s) or file(s)* and choose an environment variable that this token will be accessed by
 4. Use the credential in the build steps via an environment
+
+C) For committing to the 'generated' branch, create another token manually with `repo:status`, `repo_deployment`, and `public_repo` permissions:
+Steps are same as in (B).
