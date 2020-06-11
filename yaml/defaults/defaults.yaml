@@ -41,7 +41,7 @@
       - credentials-binding:
           - text:
               variable: "GITHUB_PUSH_TOKEN"
-              credential-id: 'rhscl-automation-token'
+              credential-id: 'rhscl-automation-push-token'
 
 - wrapper:
     name: 'wrappers-SCLo-container'
