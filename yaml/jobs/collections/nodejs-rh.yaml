@@ -45,6 +45,13 @@
             not_automatic: true
             trigger_phrase: 'test-openshift'
         - '{job_prefix}-{name}':
+            job_prefix: 'rhscl-images'
+            name: 'nodejs-rh-openshift-4'
+            targetOS: 'rhel7'
+            context: 'rhel7 - openshift - 4'
+            not_automatic: true
+            trigger_phrase: 'test-openshift-4'
+        - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
             name: 'nodejs-rh-fedora'
             targetOS: 'fedora'
