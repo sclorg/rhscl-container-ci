@@ -27,16 +27,16 @@ Now tests are run in two Jenkins instances:
 
 To use scripts in this repository to update jobs in Jenkins you need:
 
-* `virtualenv` command, supplied through the `python-virtualenv` RPM
+* `docker` command
 
-JJB will be installed into a virtual environment under this directory, so is
+JJB will be installed into a container environment, so is
 safe to run on any system.
 
 ## Updating all jobs
 
 The provided script can update the Jenkins jobs over the API by running JJB.
 
-    ./run.sh update
+    make run JENKINS_CMD=update
 
 To access Jenkins using JJB you have to provide configuration file. So if
 files `jenkins_jobs.ini` and `jenkins_jobs_rhscl.ini` don't exist they are
@@ -47,7 +47,7 @@ Note: [SCLo-sig](https://wiki.centos.org/SpecialInterestGroup/SCLo)
 credentials for [ci.centos.org](ci.centos.org) can be found in the home
 directory on slave01.ci.centos.org.
 
-## Using run.sh
+## Using run.sh in docker container
 
 `run.sh` is simple wrapper for `jenkins-jobs` command. It supports `update`,
 `test` and `delete` commands. And according specified name prefix of jobs it
@@ -56,21 +56,21 @@ for commands.
 
 To test the configuration of one job, run:
 
-    ./run.sh test rhscl-images-ruby-rh
+    make run JENKINS_CMD="test rhscl-images-ruby-rh"
     echo $?
 
 Once happy with the result, to test your config change on a single job, run:
 
-    ./run.sh update rhscl-images-ruby-rh
+    make run JENKINS_CMD=update rhscl-images-ruby-rh"
 
 During updating jobs you can select jobs by globbing. For example to update
 jobs configured for CentOS CI run
 
-    ./run.sh update SCLo-*
+    make run JENKINS_CMD="update SCLo-*"
 
 or to update the RHEL related jobs in different jenkins instance run
 
-    ./run.sh update rhscl-*
+    make run JENKINS_CMD="update rhscl-*"
 
 ## Generating jobs
 
@@ -104,7 +104,7 @@ regenerating all project files.**
 For regenerating all project files (if you really know what you do; see a comment above), run:
 ```
 rm yaml/jobs/collections/*yaml
-./run test
+make run JENKINS_CMD="test"
 ```
 
 ## How to add tests for a new image
@@ -114,7 +114,7 @@ When a new image is created and we want to add testing of it. Push/move image re
 1. Create jenkins job - the easiest way is to add a new entry to `./configuration` 
 file and run `./run.sh` (missing project files are generated):
 
-    `./run.sh update`
+    `make run JENKINS_CMD=update`
 
     Then a PR should include `./configuration` and the newly created file
     `./yaml/jobs/collections/<newspec>`.
