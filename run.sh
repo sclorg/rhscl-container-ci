@@ -5,35 +5,9 @@
 
 THISDIR=$(dirname ${BASH_SOURCE[0]})
 
-VIRTUALENV=virtualenv-3
-
-# Generate a virtualenv to install JJB into, in a gitignored dir
-if [ ! -d $THISDIR/local ]; then
-  if ! rpm -q python3-virtualenv &>/dev/null; then
-    echo "python3-virtualenv must be installed to run this script"
-    exit 1
-  fi
-
-  # newer Fedora versions use /bin/virtualenv
-  test -x "/usr/bin/$VIRTUALENV" || VIRTUALENV=virtualenv
-
-  $VIRTUALENV --system-site-packages "$THISDIR/local"
-else
-  echo >&2 " !! re-using virtualenv $THISDIR/local !!"
-fi
-
-source $THISDIR/local/bin/activate
-
-# Install JJB into the venv
-if ! pip show jenkins-job-builder >/dev/null 2>&1; then
-  echo "Installing jenkins-job-builder into an isolated virtualenv..."
-  # If we used latest version here (2.0.7 at the time of writing this) our we
-  # would have to update 'release-vm.yaml' file so it contains
-  # 'generict-script' hash (not string!) with 'file-path: ./.cleanup.sh'
-  # option.  But the uploaded build config would be mistreated by our (rather
-  # old) jenkins instances and the parameter would be in turn ignored entirely.
-  # TODO: because ^^ update jenkins instances first!
-  pip install jenkins-job-builder==2.0.2
+if [[ -z "$JENKINS_CMD" ]]; then
+  echo "You have to specify command as JENKINS_CMD environment variable."
+  exit 1
 fi
 
 # Generate a JJB config files
