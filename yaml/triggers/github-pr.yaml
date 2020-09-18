@@ -17,8 +17,8 @@
           only-trigger-phrase: '{not_automatic}'
           status-context: '{context}'
           status-url: '$BUILD_GIST_URL'
-          auth-id: 'rhscl-automation-poll'
-#          auth-id: '3cb713b2-58d5-4d60-8b12-e5584c8b45dc'
+          auth-id: '035a32a8-544f-4dbf-a661-61de11a744a8' # rhscl-automation-poll user
+#          auth-id: '3cb713b2-58d5-4d60-8b12-e5584c8b45dc' # rhscl-automation user
 
 # For centos CI
 - trigger:
