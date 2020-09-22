@@ -8,13 +8,14 @@
             set -ex
 
             # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host bash 'EOF'
+            timeout 2h ssh -F ssh_config host bash << 'EOF'
             set -ex
 
             # Download kubeconfig
             curl -L https://url.corp.redhat.com/ocp-kubeconfig >/root/.kube/config
             # Download kubepasswd
             curl -L https://url.corp.redhat.com/kube >/root/.kube/ocp-kube
+
             cd sources
             make test-openshift-4 TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true
             EOF
