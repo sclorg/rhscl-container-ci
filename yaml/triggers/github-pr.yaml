@@ -12,7 +12,7 @@
           allow-whitelist-orgs-as-admins: true
           white-list-target-branches: ['master']
           cron: 'H/10 * * * *'
-          build-desc-template: "Checks whether PR does not break anything"
+          build-desc-template: "Check PR#${{ghprbPullId}} (${{ghprbPullTitle}})"
           trigger-phrase: '.*\[{trigger_phrase}\].*'
           only-trigger-phrase: '{not_automatic}'
           status-context: '{context}'
@@ -35,7 +35,7 @@
           white-list-target-branches: ['master']
           cron: 'H/5 * * * *'
           github-hooks: 'true'
-          build-desc-template: "Checks whether PR does not break anything"
+          build-desc-template: "Check PR#${{ghprbPullId}} (${{ghprbPullTitle}})"
           trigger-phrase: '.*\[{trigger_phrase}\].*'
           only-trigger-phrase: '{not_automatic}'
           status-context: '{context}'
