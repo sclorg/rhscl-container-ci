@@ -7,6 +7,7 @@
             #!/bin/bash
             set -ex
 
+            repo_name=$(jq -r '.repository.name' <<< "$CI_MESSAGE")
             rconnection="--connection http://10.0.149.99:49100/"
 
             resalloc $rconnection ticket --tag {restag} > ticket
@@ -30,6 +31,9 @@
             set -ex
 
             resalloc $rconnection ticket-close "$ticket"
+            if [ -d "./$repo_name" ]; then
+              rm -rf "./$repo_name"
+            fi
             rm ticket ssh_config
             EOF
             chmod a+x .cleanup.sh

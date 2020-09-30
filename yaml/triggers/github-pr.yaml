@@ -20,6 +20,29 @@
           auth-id: '035a32a8-544f-4dbf-a661-61de11a744a8' # rhscl-automation-poll user
 #          auth-id: '3cb713b2-58d5-4d60-8b12-e5584c8b45dc' # rhscl-automation user
 
+- trigger:
+    name: github-pr-fedmsg
+    triggers:
+      # https://docs.openstack.org/infra/jenkins-job-builder/triggers.html#triggers.jms-messaging
+      - jms-messaging:
+          no-squash: True
+          selector: topic = "org.fedoraproject.prod.github.issue.comment"
+          provider-name: fedmsg
+          checks:
+            # Check for pull-request only, not issue
+            # Example issue comment for mariadb
+            # https://apps.fedoraproject.org/datagrepper/id?id=2020-d79f241f-34db-4bb0-913c-2ab53fe2ab30&is_raw=true&size=extra-large
+            - field: $.issue.pull_request.url
+              expected-value: '.*'
+            # do not trigger when comment is deleted
+            - field: $.action
+              expected-value: '^created$|^edited$'
+            # check for opened pull requests only
+            - field: $.issue.state
+              expected-value: '^open$'
+            - field: $.comment.body
+              expected-value: '.*\[{trigger_phrase}\].*'
+
 # For centos CI
 - trigger:
     name: github-pr-SCLo-container

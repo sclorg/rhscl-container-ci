@@ -29,13 +29,11 @@
     wrappers:
       - wrappers-{job_prefix}
     scm:
-        - images-pull-test:
+        - images-build:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr-{job_prefix}:
-            context: '{targetOS}'
-            not_automatic: '{not_automatic}'
+        - github-pr-fedmsg:
             trigger_phrase: '{trigger_phrase}'
     builders:
         - prepare-{job_prefix}:
@@ -44,8 +42,9 @@
             #!/bin/bash
             set -ex
 
+            repo_name=$(jq -r '.repository.name' <<< "$CI_MESSAGE")
             # Copy sources and prepare shared sources (build scripts)
-            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
+            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/$repo_name/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
             ssh -F ssh_config host 'set -ex; \

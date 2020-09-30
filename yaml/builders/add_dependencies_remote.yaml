@@ -7,6 +7,21 @@
             #!/bin/bash
             set -ex
 
+            owner_repo=$(jq -r '.repository.full_name' <<< "$CI_MESSAGE")
+            pull_number=$(jq -r '.issue.number' <<< "$CI_MESSAGE")
+            comment_id=$(jq -r '.comment.id' <<< "$CI_MESSAGE")
+            repo_name=$(jq -r '.repository.name' <<< "$CI_MESSAGE")
+            pull_id=$owner_repo:$pull_number::$comment_id
+
+            echo ${CI_MESSAGE}
+            echo "${owner_repo}, ${pull_number}, ${comment_id}, ${pull_id}"
+            pwd
+
+            git clone git://github.com/${owner_repo}.git
+            cd $repo_name
+            git fetch origin +refs/pull/*:refs/remotes/origin/pr/*
+            git checkout origin/pr/${pull_number}/head
+
             curl --silent https://raw.githubusercontent.com/sclorg/rhscl-container-ci/master/configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
 
               if [[ "${{trigger}}" == *{name}* ]]; then

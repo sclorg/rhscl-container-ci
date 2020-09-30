@@ -28,8 +28,9 @@
             #!/bin/bash
             set -ex
 
+            repo_name=$(jq -r '.repository.name' <<< "$CI_MESSAGE")
             # Copy sources and prepare shared sources (build scripts)
-            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
+            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/$repo_name/ host:sources
             ssh -F ssh_config host 'cd sources && git submodule update --init'
 
         - image-test:
