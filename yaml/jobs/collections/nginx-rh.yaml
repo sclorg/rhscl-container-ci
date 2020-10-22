@@ -30,6 +30,7 @@
             job_prefix: 'rhscl-images'
             project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'centos'
+            context: 'centos7'
         - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
             name: 'nginx-rh-openshift'

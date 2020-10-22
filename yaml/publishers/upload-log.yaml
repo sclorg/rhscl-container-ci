@@ -1,6 +1,7 @@
 # Requires:
 # {gituser}
 # {gitproject}
+# {context}
 - publisher:
     name: 'upload-log-rhscl-images'
     publishers:
@@ -11,11 +12,10 @@
             #!/bin/bash
             set -e
 
-            curl -s -u "$JENKINS_CREDENTIALS" -k "$BUILD_URL/consoleText" > build_log
+            curl -Ss "$BUILD_URL/consoleText" > build_log
             GIT_COMMIT=$(git rev-parse HEAD)
             GITHUB_USERNAME="rhscl-automation"
-            COMMIT_JSON=$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/{gituser}/{gitproject}/commits/"$GIT_COMMIT")
-            COMMIT_URL=$(echo $COMMIT_JSON | python -c "import sys, json; api_res=json.load(sys.stdin); print api_res['html_url'];")
+            repo_name=$(jq -r '.repository.name' <<< "$CI_MESSAGE")
 
             envsubst > upload.py <<EOF
             #!/usr/bin/python
@@ -26,7 +26,7 @@
             with open('build_log', 'r') as f: # Read the log of this build saved in a previous step
               build_log = f.read()
 
-            gist = {{"description": "$COMMIT_URL",
+            gist = {{"description": "$GIT_COMMIT",
                     "public": False,
                     "files": {{
                        '{gitproject}' + '-#' + '$BUILD_NUMBER.sh' : {{
@@ -36,16 +36,20 @@
                               auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
 
             api_res=json.loads(req.content)
-            # Save Gist URL to a file which will be read by evironment variable injector
-            with open('build_log_url.prop', 'w') as f:
-              f.write("BUILD_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
+
+            git_status = {{"description": "Build finished",
+                          "public": False,
+                          "target_url": api_res['html_url'],
+                          "context": "Jenkins-CI for {context}",
+                          "state": "success" }}
+
+            req = requests.post("https://api.github.com/repos/{gituser}/{gitproject}/statuses/$GIT_COMMIT",
+                                data=json.dumps(git_status),
+                                auth=('$GITHUB_USERNAME', '$GITHUB_TOKEN'))
             EOF
             python upload.py
 
             rm build_log
-
-        - inject:
-            properties-file: 'build_log_url.prop'
 
 
 

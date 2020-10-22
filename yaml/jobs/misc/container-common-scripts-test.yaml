@@ -9,33 +9,41 @@
             targetOS: 'centos7'
             not_automatic: true
             trigger_phrase: 'test'
+            context: 'centos7'
         - '{job_prefix}-container-common-scripts-test':
             job_prefix: 'rhscl-images'
             targetOS: 'rhel7'
             not_automatic: true
             trigger_phrase: 'test'
+            context: 'rhel7'
         - '{job_prefix}-container-common-scripts-test':
             job_prefix: 'rhscl-images'
             job_suffix: '-rhel8'
             targetOS: 'rhel8'
             not_automatic: true
             trigger_phrase: 'test'
+            context: 'rhel8'
 
 - job-template:
     name: '{job_prefix}-container-common-scripts-test{job_suffix}'
     id: '{job_prefix}-container-common-scripts-test'
     job_suffix: ''
     node: sclo-sig||slave_rhel7_root
+    parameters:
+        - string:
+              name: CI_MESSAGE
+              default: ''
+              description: "CI message from the Red Hat CI plugin."
     wrappers:
       - wrappers-{job_prefix}
     scm:
-        - images-pull-test:
+        - images-build:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr-{job_prefix}:
-            context: '{targetOS}'
-            not_automatic: '{not_automatic}'
+        - github-pr-fedmsg:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
     builders:
         - prepare-{job_prefix}:
@@ -43,6 +51,11 @@
         - shell: |
             #!/bin/bash
             set -ex
+
+            pull_number=$(jq -r '.issue.number' <<< "$CI_MESSAGE")
+
+            git fetch origin +refs/pull/*:refs/remotes/origin/pr/*
+            git checkout origin/pr/$pull_number/head
 
             # Copy sources and prepare shared sources (build scripts)
             rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
@@ -55,3 +68,4 @@
         - upload-log-{job_prefix}:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
+            context: '{context}'

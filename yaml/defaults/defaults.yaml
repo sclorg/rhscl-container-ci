@@ -35,10 +35,6 @@
               variable: "GITHUB_TOKEN"
               credential-id: 'rhscl-automation-token'
       - credentials-binding:
-          - username-password:
-              variable: "JENKINS_CREDENTIALS"
-              credential-id: 'edc7fb0b-e2c4-40c3-9f82-46316bdb48f3'
-      - credentials-binding:
           - text:
               variable: "GITHUB_PUSH_TOKEN"
               credential-id: 'rhscl-automation-push-token'
