@@ -41,7 +41,7 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
-        - github-pr-fedmsg:
+        - github-pr-{job_prefix}:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'

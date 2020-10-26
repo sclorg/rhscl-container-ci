@@ -1,0 +1,38 @@
+# For internal infrastructure (URL must be hidden)
+# {gituser}
+# {gitproject}
+# {trigger_phrase}
+- trigger:
+    name: github-pr-rhscl-images
+    triggers:
+      - jms-messaging:
+          no-squash: True
+          provider-name: FedMsg
+          selector: topic = "org.fedoraproject.prod.github.issue.comment"
+          checks:
+            - field: "$^https://api.github.com/repos/{gituser}/{gitproject}/pulls/.*$"
+              expected-value: ".*"
+            - field: "$.action"
+              expected-value: "^created$|^edited$"
+            - field: "$.issue.state"
+              expected-value: "^open$"
+            - field: "$.issue.comment"
+              expected-value: '.*\[{trigger_phrase}\].*'
+
+# For centos CI
+- trigger:
+    name: github-pr-SCLo-container
+    triggers:
+      - jms-messaging:
+          no-squash: True
+          provider-name: fedora-fedmsg
+          selector: topic = "org.fedoraproject.prod.github.issue.comment"
+          checks:
+            - field: "$^https://api.github.com/repos/{gituser}/{gitproject}/pulls/.*$"
+              expected-value: ".*"
+            - field: "$.action"
+              expected-value: "^created$|^edited$"
+            - field: "$.issue.state"
+              expected-value: "^open$"
+            - field: "$.issue.comment"
+              expected-value: '.*\[{trigger_phrase}\].*'
