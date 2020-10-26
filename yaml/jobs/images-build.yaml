@@ -28,6 +28,9 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
         - prepare-{job_prefix}:
             restag: 'rhel7'
         - shell: |

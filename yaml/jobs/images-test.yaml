@@ -15,10 +15,6 @@
               name: CI_MESSAGE
               default: ''
               description: "CI message from the Red Hat CI plugin."
-        - string:
-              name: BUILD_GIST_URL
-              default: ''
-              description: "BUILD_GIST_URL."
     wrappers:
       - wrappers-{job_prefix}
     scm:
@@ -33,6 +29,9 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
         - prepare-{job_prefix}:
             restag: '{targetOS}'
         - shell: |

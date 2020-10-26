@@ -8,16 +8,20 @@
       - jms-messaging:
           no-squash: True
           provider-name: FedMsg
+          # Example message delivered by FedMsg
+          # https://apps.fedoraproject.org/datagrepper/id?id=2020-70def933-8ee2-4b85-a2bf-1921a804a193&is_raw=true&size=extra-large
           selector: topic = "org.fedoraproject.prod.github.issue.comment"
           checks:
-            - field: "$^https://api.github.com/repos/{gituser}/{gitproject}/pulls/.*$"
-              expected-value: ".*"
+            - field: "$.issue.pull_request.html_url"
+              expected-value: "^https://github.com/{gituser}/{gitproject}/pull/.*$"
             - field: "$.action"
               expected-value: "^created$|^edited$"
             - field: "$.issue.state"
               expected-value: "^open$"
-            - field: "$.issue.comment"
+            - field: "$.comment.body"
               expected-value: '.*\[{trigger_phrase}\].*'
+            - field: "$.comment.user.login"
+              expected-value: '^phracek$|^hhorak$|^pkubat$'
 
 # For centos CI
 - trigger:
@@ -28,11 +32,13 @@
           provider-name: fedora-fedmsg
           selector: topic = "org.fedoraproject.prod.github.issue.comment"
           checks:
-            - field: "$^https://api.github.com/repos/{gituser}/{gitproject}/pulls/.*$"
-              expected-value: ".*"
+            - field: "$.issue.pull_request.html_url"
+              expected-value: "^https://github.com/{gituser}/{gitproject}/pull/.*$"
             - field: "$.action"
               expected-value: "^created$|^edited$"
             - field: "$.issue.state"
               expected-value: "^open$"
-            - field: "$.issue.comment"
+            - field: "$.comment.body"
               expected-value: '.*\[{trigger_phrase}\].*'
+            - field: "$.comment.user.login"
+              expected-value: '^phracek$|^hhorak$|^pkubat$'
