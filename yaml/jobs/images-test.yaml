@@ -6,23 +6,32 @@
 # {targetOS}
 # {not_automatic}
 # {trigger_phrase}
+# {context}
 - job-template:
     name: '{job_prefix}-{name}'
     node: sclo-sig||slave_rhel7_root
+    parameters:
+        - string:
+              name: CI_MESSAGE
+              default: ''
+              description: "CI message from the Red Hat CI plugin."
     wrappers:
       - wrappers-{job_prefix}
     scm:
-        - images-pull-test:
+        - images-build:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
         - github-pr-{job_prefix}:
-            context: '{context}'
-            not_automatic: '{not_automatic}'
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
     builders:
         - add_dependencies_remote:
             name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
         - prepare-{job_prefix}:
             restag: '{targetOS}'
         - shell: |
@@ -45,3 +54,4 @@
         - upload-log-{job_prefix}:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
+            context: '{context}'

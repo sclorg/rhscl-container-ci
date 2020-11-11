@@ -30,6 +30,7 @@
             job_prefix: 'rhscl-images'
             project_trigger: '%TRIGGER%'
             hub_namespace: '%HUB_NAMESPACE%'
+            context: 'centos7'
         - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
             name: '%SCL%-%NAMESPACE%-openshift'

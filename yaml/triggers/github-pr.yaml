@@ -1,41 +1,44 @@
 # For internal infrastructure (URL must be hidden)
+# {gituser}
+# {gitproject}
+# {trigger_phrase}
 - trigger:
     name: github-pr-rhscl-images
     triggers:
-      - github-pull-request:
-          admin-list:
-            - hhorak
-          white-list:
-            - hhorak
-          org-list:
-            - sclorg
-          allow-whitelist-orgs-as-admins: true
-          white-list-target-branches: ['master']
-          cron: 'H/10 * * * *'
-          build-desc-template: "Check PR#${{ghprbPullId}} (${{ghprbPullTitle}})"
-          trigger-phrase: '.*\[{trigger_phrase}\].*'
-          only-trigger-phrase: '{not_automatic}'
-          status-context: '{context}'
-          status-url: '$BUILD_GIST_URL'
-          auth-id: '035a32a8-544f-4dbf-a661-61de11a744a8' # rhscl-automation-poll user
-#          auth-id: '3cb713b2-58d5-4d60-8b12-e5584c8b45dc' # rhscl-automation user
+      - jms-messaging:
+          no-squash: True
+          provider-name: FedMsg
+          # Example message delivered by FedMsg
+          # https://apps.fedoraproject.org/datagrepper/id?id=2020-70def933-8ee2-4b85-a2bf-1921a804a193&is_raw=true&size=extra-large
+          selector: topic = "org.fedoraproject.prod.github.issue.comment"
+          checks:
+            - field: "$.issue.pull_request.html_url"
+              expected-value: "^https://github.com/{gituser}/{gitproject}/pull/.*$"
+            - field: "$.action"
+              expected-value: "^created$|^edited$"
+            - field: "$.issue.state"
+              expected-value: "^open$"
+            - field: "$.comment.body"
+              expected-value: '.*\[{trigger_phrase}\].*'
+            - field: "$.comment.user.login"
+              expected-value: '^phracek$|^hhorak$|^pkubat$'
 
 # For centos CI
 - trigger:
     name: github-pr-SCLo-container
     triggers:
-      - github-pull-request:
-          admin-list:
-            - hhorak
-          white-list:
-            - hhorak
-          org-list:
-            - sclorg
-          allow-whitelist-orgs-as-admins: true
-          white-list-target-branches: ['master']
-          cron: 'H/5 * * * *'
-          github-hooks: 'true'
-          build-desc-template: "Check PR#${{ghprbPullId}} (${{ghprbPullTitle}})"
-          trigger-phrase: '.*\[{trigger_phrase}\].*'
-          only-trigger-phrase: '{not_automatic}'
-          status-context: '{context}'
+      - jms-messaging:
+          no-squash: True
+          provider-name: fedora-fedmsg
+          selector: topic = "org.fedoraproject.prod.github.issue.comment"
+          checks:
+            - field: "$.issue.pull_request.html_url"
+              expected-value: "^https://github.com/{gituser}/{gitproject}/pull/.*$"
+            - field: "$.action"
+              expected-value: "^created$|^edited$"
+            - field: "$.issue.state"
+              expected-value: "^open$"
+            - field: "$.comment.body"
+              expected-value: '.*\[{trigger_phrase}\].*'
+            - field: "$.comment.user.login"
+              expected-value: '^phracek$|^hhorak$|^pkubat$'

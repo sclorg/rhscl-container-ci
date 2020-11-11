@@ -6,9 +6,15 @@
 # {trigger_phrase}
 # {project_trigger}
 # {hub_namespace}
+# {context}
 - job-template:
     name: '{job_prefix}-{name}-build'
     node: slave_rhel7_root
+    parameters:
+      - string:
+          name: CI_MESSAGE
+          default: ''
+          description: "CI message from the Red Hat CI plugin."
     wrappers:
       - wrappers-{job_prefix}
     scm:
@@ -22,6 +28,9 @@
     builders:
         - add_dependencies_remote:
             name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
         - prepare-{job_prefix}:
             restag: 'rhel7'
         - shell: |
@@ -45,6 +54,7 @@
         - upload-log-{job_prefix}:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
+            context: '{context}'
         - build-status
         - email:
-            recipients: 'mskalick@redhat.com hhorak@redhat.com'
+            recipients: 'phracek@redhat.com hhorak@redhat.com'

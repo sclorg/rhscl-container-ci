@@ -1,3 +1,7 @@
+# Requires:
+# {gituser}
+# {gitproject}
+# {context}
 # parameters:
 #   name: software collection name, e.g. httpd24
 - builder:
@@ -6,6 +10,30 @@
         - shell: |
             #!/bin/bash
             set -ex
+
+            pull_number=$(jq -r '.issue.number' <<< "$CI_MESSAGE")
+
+            git fetch origin +refs/pull/*:refs/remotes/origin/pr/*
+            git checkout origin/pr/$pull_number/head
+
+            GIT_COMMIT=$(git rev-parse HEAD)
+            envsubst > upload.py <<EOF
+            #!/usr/bin/python
+            # -*- coding: utf-8 -*-
+            # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
+            import json, requests, base64
+
+            build_log = {{"description": "Build started.",
+                          "public": False,
+                          "target_url": $BUILD_URL/consoleText,
+                          "context": "Jenkins-CI for {context}",
+                          "state": "pending" }}
+
+            req = requests.post("https://api.github.com/repos/{gituser}/{gitproject}/statuses/$GIT_COMMIT",
+                                data=json.dumps(build_log),
+                                auth=('$GITHUB_USERNAME', '$GITHUB_TOKEN'))
+            EOF
+            python upload.py
 
             curl --silent https://raw.githubusercontent.com/sclorg/rhscl-container-ci/master/configuration | while read scl namespace gituser gitproject trigger hub_namespace; do
 
