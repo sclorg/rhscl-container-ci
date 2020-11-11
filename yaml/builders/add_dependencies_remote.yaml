@@ -25,7 +25,7 @@
 
             build_log = {{"description": "Build started.",
                           "public": False,
-                          "target_url": $BUILD_URL/consoleText,
+                          "target_url": "$BUILD_URL/consoleText",
                           "context": "Jenkins-CI for {context}",
                           "state": "pending" }}
 
