@@ -1,22 +1,35 @@
 - project:
     name: nightly_builds
     jobs:
-      - 'nightly_build_{os}':
+      - '{build_name}_{os}':
           os: fedora
           targetOS: rhel7
-      - 'nightly_build_{os}':
+          tests: test
+          build_name: nightly_build
+      - '{build_name}_{os}':
           os: centos7
           targetOS: rhel7
-      - 'nightly_build_{os}':
+          tests: test
+          build_name: nightly_build
+      - '{build_name}_{os}':
           os: rhel7
           targetOS: rhel7
-      - 'nightly_build_{os}':
+          tests: test
+          build_name: nightly_build
+      - '{build_name}_{os}':
           os: rhel8
           targetOS: rhel8
+          tests: test
+          build_name: nightly_build
+      - '{build_name}_{os}':
+          os: centos7
+          targetOS: rhel7
+          tests: test-openshift
+          build_name: nightly_build_openshift_3
 
 - job-template:
-    name: nightly_build_{os}
-    id: 'nightly_build_{os}'
+    name: {build_name}_{os}
+    id: '{build_name}_{os}'
     description: |
       This job test all '{os}' RHSCL containers each night
     node: nightly_builds
@@ -57,7 +70,7 @@
 
           # Run make for base image and for each dependent image
           timeout 3h ssh -F ssh_config host 'set -ex; \
-            cd sources; bash daily_tests/daily_scl_tests.sh {os}'
+            cd sources; bash daily_tests/daily_scl_tests.sh {os} {tests}'
 
     publishers:
       - send-email:
