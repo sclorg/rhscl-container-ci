@@ -26,9 +26,14 @@
           targetOS: rhel7
           tests: test-openshift
           build_name: nightly_build_openshift_3
+      - '{build_name}_{os}':
+          os: rhel7
+          targetOS: rhel7
+          tests: test-openshift
+          build_name: nightly_build_openshift_3
 
 - job-template:
-    name: {build_name}_{os}
+    name: '{build_name}_{os}'
     id: '{build_name}_{os}'
     description: |
       This job test all '{os}' RHSCL containers each night
