@@ -18,10 +18,10 @@
             image_name=$(echo "{name}" | cut -f1 -d'-')
             IMAGE="${{image_name/_/:}}"
 
-            docker pull docker.io/$IMAGE
+            docker pull quay.io/$IMAGE
 
-            if [ "$(docker inspect --format='{{{{.Id}}}}' docker.io/$IMAGE)" != "$(docker inspect --format='{{{{.Id}}}}' {name}:images)" ]; then
-              docker tag docker.io/$IMAGE {name}:images
+            if [ "$(docker inspect --format='{{{{.Id}}}}' quay.io/$IMAGE)" != "$(docker inspect --format='{{{{.Id}}}}' {name}:images)" ]; then
+              docker tag quay.io/$IMAGE {name}:images
               exit 0
             else
               exit 1
@@ -34,6 +34,6 @@
           image_name=$(echo "{name}" | cut -f1 -d'-')
           IMAGE="${{image_name/_/:}}"
 
-          docker pull docker.io/$IMAGE
+          docker pull quay.io/$IMAGE
 
-          docker tag docker.io/$IMAGE {name}:images
+          docker tag quay.io/$IMAGE {name}:images
