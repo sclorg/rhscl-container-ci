@@ -22,11 +22,6 @@
           tests: test
           build_name: nightly_build
       - '{build_name}_{os}':
-          os: centos7
-          targetOS: rhel7
-          tests: test-openshift
-          build_name: nightly_build_openshift_3
-      - '{build_name}_{os}':
           os: rhel7
           targetOS: rhel7
           tests: test-openshift
@@ -74,10 +69,11 @@
             git config --global user.email "sclorg@redhat.com"'
 
           # Run make for base image and for each dependent image
-          timeout 3h ssh -F ssh_config host 'set -ex; \
+          timeout 5h ssh -F ssh_config host 'set -ex; \
             cd sources; bash daily_tests/daily_scl_tests.sh {os} {tests}'
 
     publishers:
       - send-email:
           os: '{os}'
+          tests: '{tests}'
       - release-vm
