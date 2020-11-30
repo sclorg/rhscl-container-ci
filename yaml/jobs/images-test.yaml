@@ -27,11 +27,15 @@
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
     builders:
-        - add_dependencies_remote:
+        - update_github_pr:
             name: '{name}'
             gitproject: '{gitproject}'
             gituser: '{gituser}'
             context: '{context}'
+        - add_dependencies_remote:
+            name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
         - prepare-{job_prefix}:
             restag: '{targetOS}'
         - shell: |
