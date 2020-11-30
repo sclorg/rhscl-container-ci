@@ -18,7 +18,7 @@
             # Update Docker Hub
             ssh -F ssh_config host << 'EOF'
             # refresh the token that expires too often
-            curl -L https://url.corp.redhat.com/cs-dh-web-tok >/root/.docker_credentials/centos/hub-webapi-token
+            curl -L https://url.corp.redhat.com/cs-dh-web-tok >/root/.docker_credentials/docker_io/hub-webapi-token
 
             set -ex;
             source dhwebapi/bin/activate
@@ -36,16 +36,16 @@
                   scl enable rh-python35 -- \
                     dhwebapi update-repo-description \
                            -f <(echo "${{description}}") \
-                           --tokenfile /root/.docker_credentials/{hub_namespace}/hub-webapi-token \
-                           {hub_namespace} ${{name%:*}}
+                           --tokenfile /root/.docker_credentials/docker_io/hub-webapi-token \
+                           centos ${{name%:*}}
                 fi
                 echo "Update Docker Hub full description from the README.md"
                 if [ -f ${{version}}/README.md ] ; then
                   scl enable rh-python35 -- \
                     dhwebapi update-repo-full-description \
                            -f ${{version}}/README.md \
-                           --tokenfile /root/.docker_credentials/{hub_namespace}/hub-webapi-token \
-                           {hub_namespace} ${{name%:*}}
+                           --tokenfile /root/.docker_credentials/docker_io/hub-webapi-token \
+                           centos ${{name%:*}}
                 fi
               done
             done
