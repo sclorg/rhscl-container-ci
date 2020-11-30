@@ -58,7 +58,7 @@
                                 auth=('$GITHUB_USERNAME', '$GITHUB_TOKEN'))
             # Save Gist URL to a file which will be read by evironment variable injector
             with open('build_log_url.prop', 'w') as f:
-              f.write("BUILD_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
+              f.write("BUILD_GIST_URL=" + api_res['html_url'] + "\n")
             EOF
             python upload.py
 

@@ -43,10 +43,10 @@
               # By default images are now tagged into localhost/ registry
               # Image name for Docker Hub
               # hub_namespace is docker.io/centos and we need to get from image only image name
-              image_name={hub_namespace}/\${{image##*/}}
-              echo "Pushing ${{image}} into Quay Hub"
+              image_name={hub_namespace}/${{image##*/}}
+              echo "Push ${{image}} into Quay Hub"
               HOME=~/.docker_credentials/quay_io docker push ${{image}}
-              echo "Pushin ${{image_name}} into Docker Hub"
+              echo "Push ${{image_name}} into Docker Hub"
               docker tag ${{image}} ${{image_name}}
               HOME=~/.docker_credentials/docker_io docker push ${{image_name}}
             done
