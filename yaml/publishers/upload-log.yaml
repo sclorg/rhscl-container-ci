@@ -56,10 +56,15 @@
             req = requests.post("https://api.github.com/repos/{gituser}/{gitproject}/statuses/$GIT_COMMIT",
                                 data=json.dumps(dist_git_url),
                                 auth=('$GITHUB_USERNAME', '$GITHUB_TOKEN'))
+            # Save Gist URL to a file which will be read by evironment variable injector
+            with open('build_log_url.prop', 'w') as f:
+              f.write("BUILD_GIST_URL={{0}}".format(api_res['html_url'])+"\n")
             EOF
             python upload.py
 
             rm build_log build_log.json
+        - inject:
+            properties-file: 'build_log_url.prop'
 
 
 
