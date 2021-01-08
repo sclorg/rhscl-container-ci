@@ -21,7 +21,7 @@
             - field: "$.comment.body"
               expected-value: '.*\[{trigger_phrase}\].*'
             - field: "$.comment.user.login"
-              expected-value: '^phracek$|^hhorak$|^pkubat$|^fila43$|^frenzymadness$'
+              expected-value: '^phracek$|^hhorak$|^pkubatrh$|^fila43$|^frenzymadness$'
 
 # For centos CI
 - trigger:
