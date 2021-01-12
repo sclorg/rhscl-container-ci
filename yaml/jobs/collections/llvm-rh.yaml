@@ -29,7 +29,8 @@
         - '{job_prefix}-{name}-build':
             job_prefix: 'rhscl-images'
             project_trigger: 'rhscl-images-centos_centos7-rh-trigger'
-            hub_namespace: 'centos'
+            hub_namespace: 'docker.io/centos'
+            context: 'centos7'
         - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
             name: 'llvm-rh-openshift'
