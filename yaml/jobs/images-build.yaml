@@ -46,9 +46,10 @@
         - image-build-push:
             targetOS: 'centos7'
             hub_namespace: '{hub_namespace}'
-        - docker-hub-update:
+        - quay-hub-update:
             targetOS: 'centos7'
-            hub_namespace: '{hub_namespace}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
     publishers:
         - release-vm
         - upload-log-{job_prefix}:

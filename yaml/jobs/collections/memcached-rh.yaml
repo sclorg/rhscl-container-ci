@@ -13,7 +13,6 @@
     name: memcached-rh
     gitproject: memcached
     gituser: sclorg
-    release: 8
     jobs:
         - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
@@ -27,6 +26,32 @@
             context: 'rhel7'
             not_automatic: false
             trigger_phrase: 'test'
+        - '{job_prefix}-{name}-build':
+            job_prefix: 'rhscl-images'
+            project_trigger: 'rhscl-images-centos_centos7-rh-trigger'
+            hub_namespace: 'docker.io/centos'
+            context: 'centos7'
+        - '{job_prefix}-{name}':
+            job_prefix: 'SCLo-container'
+            name: 'memcached-rh-openshift'
+            targetOS: 'centos7'
+            context: 'centos7 - openshift'
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
+        - '{job_prefix}-{name}':
+            job_prefix: 'rhscl-images'
+            name: 'memcached-rh-openshift'
+            targetOS: 'rhel7'
+            context: 'rhel7 - openshift'
+            not_automatic: true
+            trigger_phrase: 'test-openshift'
+        - '{job_prefix}-{name}':
+            job_prefix: 'rhscl-images'
+            name: 'memcached-rh-openshift-4'
+            targetOS: 'rhel7'
+            context: 'rhel7 - openshift - 4'
+            not_automatic: true
+            trigger_phrase: 'test-openshift-4'
         - '{job_prefix}-{name}':
             job_prefix: 'SCLo-container'
             name: 'memcached-rh-fedora'

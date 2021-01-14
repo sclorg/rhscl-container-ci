@@ -38,6 +38,10 @@
           - text:
               variable: "GITHUB_PUSH_TOKEN"
               credential-id: 'rhscl-automation-push-token'
+      - credentials-binding:
+          - text:
+              variable: "QUAY_OAUTH_TOKEN"
+              credential-id: 'quay-oauth-token'
 
 - wrapper:
     name: 'wrappers-SCLo-container'
