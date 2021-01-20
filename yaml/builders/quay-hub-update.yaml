@@ -38,17 +38,26 @@
                   fi
                   name=${{image##*/}}
                   echo "Update Quay.io with description and link to README.md on GitHub"
+                  echo "Check if generated branch exist"
+                  generated_branch=""
+                  if git ls-remote --exit-code origin generated; then
+                    generated_branch="blob/generated/"
+                  fi
+
                   if [ -L ${{version}}/README.md ] ; then
                     # In case e.g. in redis-container
                     # 5/README.md -> root/usr/share/container-scripts/redis/README.md
                     # Then we have to update link to 5/root/usr/share/container-scripts/redis/README.md
-                    REAL_FILE=$(readlink ${{version}}/README.md)
-                    description="${{description}}.<br>Learn more <a href=\\\"https://github.com/{gituser}/{gitproject}/${{version}}/${{REAL_FILE}}\\\">https://github.com/{gituser}/{gitproject}/${{version}}/${{REAL_FILE}}</a>"
+                    readme_file=$(readlink ${{version}}/README.md)
+                    if [[ x"${{generated_branch}}" == "x" ]]; then
+                      generated_branch="blob/master/"
+                    fi
+                    description="${{description}}.<br>Learn more <a href=\\\"https://github.com/{gituser}/{gitproject}/${{generated_branch}}${{version}}/${{readme_file}}\\\">https://github.com/{gituser}/{gitproject}/${{generated_branch}}${{version}}/${{REAL_FILE}}</a>"
                     bash upload_quay.sh ${{name%:*}} "${{description}}"
                   elif [ -f ${{version}}/README.md ]; then
-                    description="${{description}}.<br>Learn more <a href=\\\"https://github.com/{gituser}/{gitproject}/${{version}}/README.md\\\">https://github.com/{gituser}/{gitproject}/${{version}}/README.md</a>"
+                    description="${{description}}.<br>Learn more <a href=\\\"https://github.com/{gituser}/{gitproject}/${{generated_branch}}${{version}}/README.md\\\">https://github.com/{gituser}/{gitproject}/${{generated_branch}}${{version}}/README.md</a>"
                     bash upload_quay.sh ${{name%:*}} "${{description}}"
                   fi
-                  done
+                done
               done
             EOF
