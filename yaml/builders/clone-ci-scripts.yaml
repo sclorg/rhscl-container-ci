@@ -1,0 +1,12 @@
+# This Jenkins YAML file
+# clones ci-scripts repository which contains scripts used by Jenkins CI
+- builder:
+    name: clone-ci-scripts
+    builders:
+        - shell: |
+            #!/bin/bash
+            # The script also clone http://github.com/sclorg/ci-scripts repository
+            # Which is used in Jenkins CI
+            # Clone ci-scripts repository
+            set -ex
+            git clone https://github.com/sclorg/ci-scripts.git $(pwd)/ci-scripts

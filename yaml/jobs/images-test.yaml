@@ -15,6 +15,10 @@
               name: CI_MESSAGE
               default: ''
               description: "CI message from the Red Hat CI plugin."
+        - string:
+              name: CI_SCRIPTS
+              default: "./ci-scripts/jenkins_ci"
+              description: "Path to Jenkins CI scripts."
     wrappers:
       - wrappers-{job_prefix}
     scm:
@@ -27,6 +31,7 @@
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
     builders:
+        - clone-ci-scripts
         - update_github_pr:
             name: '{name}'
             gitproject: '{gitproject}'
@@ -38,14 +43,6 @@
             gituser: '{gituser}'
         - prepare-{job_prefix}:
             restag: '{targetOS}'
-        - shell: |
-            #!/bin/bash
-            set -ex
-
-            # Copy sources and prepare shared sources (build scripts)
-            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
-            ssh -F ssh_config host 'cd sources && git submodule update --init'
-
         - image-{trigger_phrase}:
             targetOS: '{targetOS}'
             trigger_phrase: '{trigger_phrase}'

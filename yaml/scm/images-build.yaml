@@ -7,5 +7,5 @@
       - git:
           url: git://github.com/{gituser}/{gitproject}.git
           branches:
-             - 'origin/master'
+            - 'origin/master'
           skip-tag: True
