@@ -6,28 +6,8 @@
         - shell: |
             #!/bin/bash
             set -ex
-
             # Generate sources, commit changes into generated branch and show diff
-            ssh -F ssh_config host 'set -ex; \
-              git config --global user.name "SCLorg Jenkins"; \
-              git config --global user.email "sclorg@redhat.com"; \
-              cd sources; \
-              if git ls-remote --exit-code origin generated &>/dev/null; then \
-                ./common/update-generated.sh; \
-                git diff origin/generated..generated; \
-              fi;'
+            ssh -F ssh_config host 'set -ex; cd sources && ./ci-scripts/jenkins_ci/commit-into-generated-branch.sh'
 
             # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host 'set -ex; \
-              cd sources; make test TARGET={targetOS} UPDATE_BASE=1 TAG_ON_SUCCESS=true; \
-              [ -f ./test/run-conu ] && [ "{targetOS}" != "rhel8" ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
-              for remote in $(git remote | grep test_); do \
-                git checkout $remote/master; \
-                git submodule update --init; \
-                versions=$(grep "VERSIONS = " Makefile | sed "s|VERSIONS = ||"); \
-                echo "Testing ${{remote#test_}}/master - version ${{versions##* }}"; \
-                make test TARGET={targetOS} VERSIONS=${{versions##* }}; \
-                [ -f ./test/run-conu ] && [ "{targetOS}" != "rhel8" ] && make test-with-conu TARGET={targetOS} TAG_ON_SUCCESS=true; \
-              done; \
-              git checkout -f origin/master;'
-
+            timeout 2h ssh -F ssh_config host "set -ex; cd source && ./ci-scripts/jenkins_ci/run-tests.sh {targetOS}"

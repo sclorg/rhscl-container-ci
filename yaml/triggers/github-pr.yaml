@@ -41,4 +41,4 @@
             - field: "$.comment.body"
               expected-value: '.*\[{trigger_phrase}\].*'
             - field: "$.comment.user.login"
-              expected-value: '^phracek$|^hhorak$|^pkubat$'
+              expected-value: '^phracek$|^hhorak$|^pkubatrh$|^fila43$|^frenzymadness$'
