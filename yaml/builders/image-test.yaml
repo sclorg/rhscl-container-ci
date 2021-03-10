@@ -10,4 +10,4 @@
             ssh -F ssh_config host 'set -ex; cd sources && ./ci-scripts/jenkins_ci/commit-into-generated-branch.sh'
 
             # Run make for base image and for each dependent image
-            timeout 2h ssh -F ssh_config host "set -ex; cd source && ./ci-scripts/jenkins_ci/run-tests.sh {targetOS}"
+            timeout 2h ssh -F ssh_config host "set -ex; cd sources && ./ci-scripts/jenkins_ci/run-tests.sh {targetOS}"
