@@ -13,4 +13,4 @@
 
             # Push images
             ssh -F ssh_config host 'cd sources && \
-              ./ci-scripts/jenkins_ci/tag-push-to-registry.sh "{targetOS}"'
+              ./ci-scripts/jenkins_ci/tag-push-to-registry.sh "{targetOS}" "{hub_namespace}"'
