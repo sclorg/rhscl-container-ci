@@ -11,4 +11,4 @@
             #!/bin/bash
             set -ex
 
-            ./ci-scripts/jennkins_ci/update_github_pr.sh "{context}" "{gituser}" "{gitproject}"
+            ./ci-scripts/jenkins_ci/update_github_pr.sh "{context}" "{gituser}" "{gitproject}"

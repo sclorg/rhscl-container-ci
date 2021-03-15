@@ -26,6 +26,7 @@
         - reverse:
             jobs: '{project_trigger}'
     builders:
+        - clone-ci-scripts
         - add_dependencies_remote:
             name: '{name}'
             gitproject: '{gitproject}'
