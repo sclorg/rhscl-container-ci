@@ -12,57 +12,7 @@
             #!/bin/bash
             set -e
 
-            GIT_COMMIT=$(git rev-parse HEAD)
-            GITHUB_USERNAME="rhscl-automation"
-
-            curl -Ss "$BUILD_URL/consoleText" > build_log
-            curl -Ss "$BUILD_URL/api/json" > build_log.json
-
-            envsubst > upload.py <<EOF
-            #!/usr/bin/python
-            # -*- coding: utf-8 -*-
-            # Create a Github Gist (an alternative to pastebin) which will be linked to from Github
-            import json, requests, base64
-
-            with open('build_log', 'r') as f: # Read the log of this build saved in a previous step
-              build_log = f.read()
-
-            with open('build_log.json', 'r') as f_json:
-              build_json = json.loads(f_json.read())
-
-            gist = {{"description": "$GIT_COMMIT",
-                    "public": False,
-                    "files": {{
-                       '{gitproject}' + '-#' + '$BUILD_NUMBER.sh' : {{
-                         "content": build_log }} }} }}
-
-            req = requests.post("https://api.github.com/gists", data=json.dumps(gist),
-                              auth=('$GITHUB_USERNAME','$GITHUB_TOKEN'))
-
-            api_res=json.loads(req.content)
-
-            if 'result' in build_json and build_json['result'] == 'SUCCESS':
-              build_state = "success"
-            else:
-              build_state = "failure"
-
-
-            dist_git_url = {{"description": "Build finished",
-                          "public": False,
-                          "target_url": api_res['html_url'],
-                          "context": "Jenkins-CI for {context}",
-                          "state": build_state }}
-
-            req = requests.post("https://api.github.com/repos/{gituser}/{gitproject}/statuses/$GIT_COMMIT",
-                                data=json.dumps(dist_git_url),
-                                auth=('$GITHUB_USERNAME', '$GITHUB_TOKEN'))
-            # Save Gist URL to a file which will be read by evironment variable injector
-            with open('build_log_url.prop', 'w') as f:
-              f.write("BUILD_GIST_URL=" + api_res['html_url'] + "\n")
-            EOF
-            python upload.py
-
-            rm build_log build_log.json
+            ./ci-scripts/jenkins_ci/jenkins_upload_log.sh "{context}" "{gituser}" "{gitproject}"
         - inject:
             properties-file: 'build_log_url.prop'
 
