@@ -34,6 +34,10 @@
               name: CI_MESSAGE
               default: ''
               description: "CI message from the Red Hat CI plugin."
+        - string:
+              name: CI_SCRIPTS
+              default: "./ci-scripts/jenkins_ci"
+              description: "Path to Jenkins CI scripts."
     wrappers:
       - wrappers-{job_prefix}
     scm:
@@ -46,6 +50,12 @@
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
     builders:
+        - clone-ci-scripts
+        - update_github_pr:
+            name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
         - prepare-{job_prefix}:
             restag: '{targetOS}'
         - shell: |
