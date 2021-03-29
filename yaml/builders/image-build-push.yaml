@@ -9,7 +9,7 @@
             set -ex
 
             # Push generated branch
-            ssh -F ssh_config host "cd sources && ./ci-scripts/jenkins_ci/push-into-generated-branch.sh"
+            ssh -F ssh_config host "cd sources && GITHUB_PUSH_TOKEN=$GITHUB_PUSH_TOKEN ./ci-scripts/jenkins_ci/push-into-generated-branch.sh"
 
             # Push images
             ssh -F ssh_config host 'cd sources && \

@@ -15,4 +15,4 @@
             #!/bin/bash
             set -ex
 
-            ssh -F ssh_config host 'cd sources && ./ci-scripts/jenkins_ci/upload_quay.sh "{targetOS}" "{gituser}" "{gitproject}"'
+            ssh -F ssh_config host 'cd sources && QUAY_OAUTH_TOKEN=$QUAY_OAUTH_TOKEN ./ci-scripts/jenkins_ci/upload_quay.sh "{targetOS}" "{gituser}" "{gitproject}"'
