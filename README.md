@@ -23,6 +23,10 @@ Now tests are run in two Jenkins instances:
 
   - JJB configuration file `jenkins_jobs_rhscl.ini`
 
+All scripts, which are used by this repo, are stored in alone repository
+[ci-scripts](https://github.com/sclorg/ci-scripts), so we do not update Jenkins CI
+by each change. `ci-scripts` repository is cloned by each task in Jenkins CI.
+
 ## Pre-requisites
 
 To use scripts in this repository to update jobs in Jenkins you need:
@@ -138,22 +142,6 @@ A) Update the status of the pull-request
 
 B) Creating a gist file to share the job log, that is otherwise available behind a firewall only; and updating generated branch
 
-**This is how the credentials are created for each case:**
-
-A) For the pull-request status update, let the Jenkins create a token itself, with all necessary permissions:
-
-1. create github `user`:`password` credentials in *Jenkins -> Credentials -> System -> Jenkins -> Global credentials* with a type "Username with password"
-2. Go to the *Manage Jenkins -> Configure System* and find "GitHub Pull Request Builder" section
-3. Create a new entry with `https://api.github.com` as GitHub Server API URL, and picking the previously created `user`:`password` credentials
-4. Click Create API Token and let the Jenkins to create Github token
-5. This token is later available in *Jenkins -> Credentials -> System -> api.github.com*
-6. Pick this token in the Job GitHub API credentials
-
-B) For Gist upload and generated branch update, create another token manually with `gist` and `repo:status` permissions:
-1. Generate a token on github.com (*Settings -> Developer settings -> Personal access tokens*)
-2. Create a "Secret text" type Jenkins credential token in *Jenkins -> Credentials -> System -> Global credentials*
-3. Export this credential for jobs in Build *Environment -> Use secret text(s) or file(s)* and choose an environment variable that this token will be accessed by
-4. Use the credential in the build steps via an environment
-
-C) For committing to the 'generated' branch, create another token manually with `repo:status`, `repo_deployment`, and `public_repo` permissions:
-Steps are same as in (B).
+All credentials, tokens and configurations are now hidden in secret repo.
+Our Jenkins CI is now configured as Configuration as a Code.
+For access to this repo, ask pkubat@redhat.com, hhorak@redhat.com or phracek@redhat.com
