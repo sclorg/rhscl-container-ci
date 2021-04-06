@@ -30,6 +30,8 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
+            not_automatic: '{not_automatic}'
+            context: '{context}'
     builders:
         - clone-ci-scripts
         - update_github_pr:

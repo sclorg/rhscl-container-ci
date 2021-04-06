@@ -49,6 +49,8 @@
             gituser: '{gituser}'
             gitproject: '{gitproject}'
             trigger_phrase: '{trigger_phrase}'
+            not_automatic: '{not_automatic}'
+            context: '{context}'
     builders:
         - clone-ci-scripts
         - update_github_pr:
@@ -62,17 +64,9 @@
             #!/bin/bash
             set -ex
 
-            pull_number=$(jq -r '.issue.number' <<< "$CI_MESSAGE")
-
-            git fetch origin +refs/pull/*:refs/remotes/origin/pr/*
-            git checkout origin/pr/$pull_number/head
-
-            # Copy sources and prepare shared sources (build scripts)
-            rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
-            ssh -F ssh_config host 'cd sources && git submodule update --init'
             # Run make for base image and for each dependent image
-            ssh -F ssh_config host 'set -ex; \
-              cd sources; make check'
+            timeout 2h ssh -F ssh_config host "set -ex; cd sources && ./ci-scripts/jenkins_ci/run-container-common-scripts-tests.sh"
+
     publishers:
         - release-vm
         - upload-log-{job_prefix}:

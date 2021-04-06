@@ -2,6 +2,8 @@
 # {gituser}
 # {gitproject}
 # {trigger_phrase}
+# {not_automatic}
+# {context}
 - trigger:
     name: github-pr-rhscl-images
     triggers:
@@ -27,18 +29,18 @@
 - trigger:
     name: github-pr-SCLo-container
     triggers:
-      - jms-messaging:
-          no-squash: True
-          provider-name: fedora-fedmsg
-          selector: topic = "org.fedoraproject.prod.github.issue.comment"
-          checks:
-            - field: "$.issue.pull_request.html_url"
-              expected-value: "^https://github.com/{gituser}/{gitproject}/pull/.*$"
-            - field: "$.action"
-              expected-value: "^created$|^edited$"
-            - field: "$.issue.state"
-              expected-value: "^open$"
-            - field: "$.comment.body"
-              expected-value: '.*\[{trigger_phrase}\].*'
-            - field: "$.comment.user.login"
-              expected-value: '^phracek$|^hhorak$|^pkubatrh$|^fila43$|^frenzymadness$'
+      - github-pull-request:
+          admin-list:
+            - hhorak
+          white-list:
+            - hhorak
+          org-list:
+            - sclorg
+          allow-whitelist-orgs-as-admins: true
+          white-list-target-branches: ['master']
+          cron: 'H/5 * * * *'
+          github-hooks: 'true'
+          build-desc-template: "Check PR#${{ghprbPullId}} (${{ghprbPullTitle}})"
+          trigger-phrase: '.*\[{trigger_phrase}\].*'
+          only-trigger-phrase: '{not_automatic}'
+          status-context: '{context}'
