@@ -47,7 +47,7 @@
             trigger_phrase: 'test-openshift'
         - '{job_prefix}-{name}':
             job_prefix: 'rhscl-images'
-            name: 'devtoolset-rh-openshift-4'
+            name: 'devtoolset-rh-rhel7-openshift-4'
             targetOS: 'rhel7'
             context: 'rhel7 - openshift - 4'
             not_automatic: true
@@ -66,3 +66,10 @@
             context: 'rhel8'
             not_automatic: false
             trigger_phrase: 'test'
+        - '{job_prefix}-{name}':
+            job_prefix: 'rhscl-images'
+            name: 'devtoolset-rh-rhel8-openshift-4'
+            targetOS: 'rhel8'
+            context: 'rhel8 - openshift - 4'
+            not_automatic: true
+            trigger_phrase: 'test-openshift-4'
