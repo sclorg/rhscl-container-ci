@@ -134,6 +134,13 @@ file and run `./run.sh` (missing project files are generated):
 
 4. If the repository is supposed to be maintaned (write/admin permissions) only by people from RedHat, add the repository to **'RedHat maintained'** github team. There is a jenkins job which check permissions for all repositories listed there.
 
+## Branches in this repo
+
+This repository contains three important branches
+* `old_jenkins` - which did not use `ci-scripts` repository and Jenkins CI did not use OpenShift at all.
+* `ocp3_jenkins` - which uses `ci-scripts` repository with branch `ocp3_jenkins` and Jenkins CI use OpenShift 3 and configuration is done as Configuration as a Code.
+* `master` - which uses `ci-scripts` repository with branch `master` and Jenkins CI use OpenShift 4 and configuration is done as Configuration as a Code.
+
 ## Creating necessary credentials in Jenkins
 
 **Jenkins jobs need permissions to access github pull-requests for two reasons:**
