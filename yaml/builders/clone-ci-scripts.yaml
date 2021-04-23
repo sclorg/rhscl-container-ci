@@ -9,7 +9,6 @@
             # Which is used in Jenkins CI
             # Clone ci-scripts repository
             set -ex
-            git clone https://github.com/sclorg/ci-scripts.git $(pwd)/ci-scripts
-            pushd $(pwd)/ci-scripts
-            git checkout ocp3_jenkins
-            popd
+            if [[ ! -d "$(pwd)/ci-scripts" ]]; then 
+                git clone https://github.com/sclorg/ci-scripts.git $(pwd)/ci-scripts
+            fi
