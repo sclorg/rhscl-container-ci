@@ -8,8 +8,60 @@
 # {trigger_phrase}
 # {context}
 - job-template:
-    name: '{job_prefix}-{name}'
-    node: sclo-sig||slave_rhel7_root
+    name: 'SCLo-container-{name}'
+    node: sclo-sig
+    parameters:
+        - string:
+              name: CI_MESSAGE
+              default: ''
+              description: "CI message from the Red Hat CI plugin."
+        - string:
+              name: CI_SCRIPTS
+              default: "./ci-scripts/jenkins_ci"
+              description: "Path to Jenkins CI scripts."
+    wrappers:
+      - wrappers-{job_prefix}
+    scm:
+        - images-pull-test:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+    triggers:
+        - github-pr-{job_prefix}:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+            trigger_phrase: '{trigger_phrase}'
+            not_automatic: '{not_automatic}'
+            context: '{context}'
+    builders:
+        - clone-ci-scripts
+        - update_github_pr:
+            name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+            context: '{context}'
+        - add_dependencies_remote:
+            name: '{name}'
+            gitproject: '{gitproject}'
+            gituser: '{gituser}'
+        - prepare-{job_prefix}:
+            restag: '{targetOS}'
+        - image-{trigger_phrase}:
+            targetOS: '{targetOS}'
+            trigger_phrase: '{trigger_phrase}'
+    publishers:
+        - upload-diff:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+            trigger_phrase: '{trigger_phrase}'
+        - release-vm
+        - upload-log-{job_prefix}:
+            gituser: '{gituser}'
+            gitproject: '{gitproject}'
+            context: '{context}'
+
+- job-template:
+    name: 'rhscl-images-{name}'
+    node: slave_rhel7_root
     parameters:
         - string:
               name: CI_MESSAGE

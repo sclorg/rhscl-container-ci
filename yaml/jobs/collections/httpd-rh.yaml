@@ -14,52 +14,52 @@
     gitproject: httpd-container
     gituser: sclorg
     jobs:
-        - '{job_prefix}-{name}':
+        - 'SCLo-container-{name}':
             job_prefix: 'SCLo-container'
             targetOS: 'centos7'
             context: 'centos7'
             not_automatic: false
             trigger_phrase: 'test'
-        - '{job_prefix}-{name}':
+        - 'rhscl-images-{name}':
             job_prefix: 'rhscl-images'
             targetOS: 'rhel7'
             context: 'rhel7'
             not_automatic: false
             trigger_phrase: 'test'
-        - '{job_prefix}-{name}-build':
+        - 'rhscl-images-{name}-build':
             job_prefix: 'rhscl-images'
             project_trigger: 'rhscl-images-s2i-rh-build'
             hub_namespace: 'docker.io/centos'
             context: 'centos7'
-        - '{job_prefix}-{name}':
+        - 'SCLo-container-{name}':
             job_prefix: 'SCLo-container'
             name: 'httpd-rh-openshift'
             targetOS: 'centos7'
             context: 'centos7 - openshift'
             not_automatic: true
             trigger_phrase: 'test-openshift'
-        - '{job_prefix}-{name}':
+        - 'rhscl-images-{name}':
             job_prefix: 'rhscl-images'
             name: 'httpd-rh-openshift'
             targetOS: 'rhel7'
             context: 'rhel7 - openshift'
             not_automatic: true
             trigger_phrase: 'test-openshift'
-        - '{job_prefix}-{name}':
+        - 'rhscl-images-{name}':
             job_prefix: 'rhscl-images'
             name: 'httpd-rh-openshift-4'
             targetOS: 'rhel7'
             context: 'rhel7 - openshift - 4'
             not_automatic: true
             trigger_phrase: 'test-openshift-4'
-        - '{job_prefix}-{name}':
+        - 'SCLo-container-{name}':
             job_prefix: 'SCLo-container'
             name: 'httpd-rh-fedora'
             targetOS: 'fedora'
             context: 'fedora'
             not_automatic: false
             trigger_phrase: 'test'
-        - '{job_prefix}-{name}':
+        - 'rhscl-images-{name}':
             name: 'httpd-rh-rhel8'
             job_prefix: 'rhscl-images'
             targetOS: 'rhel8'

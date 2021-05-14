@@ -8,7 +8,7 @@
 # {hub_namespace}
 # {context}
 - job-template:
-    name: '{job_prefix}-{name}-build'
+    name: 'rhscl-images-{name}-build'
     node: slave_rhel7_root
     parameters:
       - string:
