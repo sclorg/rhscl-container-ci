@@ -41,7 +41,7 @@
     wrappers:
       - wrappers-{job_prefix}
     scm:
-        - images-build:
+        - images-pull-test:
             gituser: '{gituser}'
             gitproject: '{gitproject}'
     triggers:
