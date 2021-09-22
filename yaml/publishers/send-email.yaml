@@ -14,7 +14,7 @@
             ssh -F ssh_config host 'set -ex; \
             cd sources; \
             python3 ./send_results.py \
-            /tmp/daily_scl_tests-{os}/results {os}-{tests} \
+            /tmp/daily_scl_tests-{os}-{tests}/results {os}-{tests} \
             "phracek@redhat.com, pkubat@redhat.com, hhorak@redhat.com, vdanek@redhat.com, lzachar@redhat.com, rhscl-container-qe@redhat.com" "phracek@redhat.com"'
 
             # Wait two seconds before cleaning machine.
