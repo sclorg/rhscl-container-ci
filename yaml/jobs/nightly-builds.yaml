@@ -47,33 +47,13 @@
           branches:
             - 'master'
     builders:
-      - prepare-rhscl-images:
-          restag: '{targetOS}'
       - shell: |
-          #!/bin/bash
-          set -ex
-
-          # Copy sources and prepare shared sources (build scripts)
-          rsync -avzP -e 'ssh -F ssh_config' $(pwd)/ host:sources
-          if [[ $? -ne 0 ]]; then
-          	rm ticket ssh_config
-          fi
-
-      - shell: |
-          #!/bin/bash
-          set -ex
-
-          # Generate sources, commit changes into generated branch and show diff
-          ssh -F ssh_config host 'set -ex; \
-            git config --global user.name "SCLorg Jenkins"; \
-            git config --global user.email "sclorg@redhat.com"'
+          yum install -y curl jq
 
           # Run make for base image and for each dependent image
-          timeout 5h ssh -F ssh_config host 'set -ex; \
-            cd sources; bash daily_tests/daily_scl_tests.sh {os} {tests}'
+          timeout 7h cd ci_scripts; bash daily_tests/daily_scl_tests.sh {os} {tests}
 
     publishers:
       - send-email:
           os: '{os}'
           tests: '{tests}'
-      - release-vm
